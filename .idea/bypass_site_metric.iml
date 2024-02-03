@@ -4,6 +4,9 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/web_driver" />
+      <excludeFolder url="file://$MODULE_DIR$/task" />
+      <excludeFolder url="file://$MODULE_DIR$/old" />
+      <excludeFolder url="file://$MODULE_DIR$/screenshots" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.11 (bypass_site_metric)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

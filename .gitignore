@@ -162,3 +162,8 @@ cython_debug/
 secure.py
 web_driver/
 /proxy
+/proxy.txt
+/proxy_
+/proxies.txt
+/task/
+/geo.json
