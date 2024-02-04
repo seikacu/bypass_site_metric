@@ -1,4 +1,5 @@
 import random
+import time
 
 from scenario_case import start_selen
 
@@ -15,6 +16,7 @@ def main():
         start_selen(random.choice(mode))
         # start_selen('mobile')
         # start_selen('PC')
+        time.sleep(60)
     # print('END')
 
 
