@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 stop_threads = False
-time_delay = random.randrange(1, 5)
+time_delay = random.randrange(3, 10)
 ''' Строка поиска новостроек '''
 
 
