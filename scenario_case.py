@@ -2,7 +2,7 @@ import threading
 import time
 import random
 
-from selenium.webdriver import ActionChains
+# from selenium.webdriver import ActionChains
 
 import math
 
@@ -12,6 +12,7 @@ from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import WebDriverException
 
 from navigation import get_but_main_el_select, apartment_scenario_mob
 from navigation import check_dialog_thread
@@ -23,7 +24,7 @@ from navigation import get_but_more
 from navigation import get_element_by_href
 from navigation import move_to_element
 from navigation import random_func_main
-from navigation import smoth_scrool
+# from navigation import smoth_scrool
 
 from selen import get_selenium_driver
 from selen import get_coordinates
@@ -219,7 +220,8 @@ def start_selen(mode):
         # time.sleep(1)
         # # driver.execute_script("arguments[0].scrollIntoView();", more_button[-1])
         # action.perform()
-
+    except WebDriverException:
+        pass
     except Exception as e:
         print(e)
         pass
