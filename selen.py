@@ -23,7 +23,7 @@ def get_path_webdriver():
 
 
 def set_driver_options(options):
-    options.binary_location = "/usr/bin/chromium"
+    options.binary_location = "/usr/bin/chromium-browser"
     options.add_argument('--headless=new')
     options.add_argument("--no-sandbox")
     options.add_experimental_option("prefs", {
@@ -71,8 +71,8 @@ def get_selenium_driver(use_proxy, mode):
 mob_devices = [
     'iPhone SE',
     'iPhone XR',
-    'iPhone 4',
-    'iPhone 5',
+    # 'iPhone 4',
+    # 'iPhone 5',
     'iPhone 6',
     'iPhone 6 Plus',
     'iPhone 14 Pro Max',
