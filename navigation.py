@@ -1,14 +1,31 @@
 import random
 import time
 
-from selenium.webdriver import ActionChains
-from selenium.common import NoSuchElementException
 from selenium import webdriver
+from selenium.common import NoSuchElementException
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
+from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 stop_threads = False
 time_delay = random.randrange(3, 10)
+
+
+def get_main_logo(driver: webdriver.Chrome):
+    teg = None
+    try:
+        el = driver.find_element(By.XPATH, "//div[@class='logo']")
+        teg = el.find_element(By.TAG_NAME, "a")
+    except NoSuchElementException:
+        pass
+    return teg
+
+
+
+
 ''' Строка поиска новостроек '''
 
 
@@ -86,14 +103,14 @@ def scroll_down_yoffset(driver: webdriver.Chrome, element: WebElement, y):
 '''
 
 
-def apartment_scenario(driver: webdriver.Chrome):
+def apartment_scenario(action, driver: webdriver.Chrome):
     try:
         section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
         elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
         el = random.choice(elements)
         move_to_element(driver, el)
         time.sleep(time_delay)
-        el.click()
+        action.click(el)
         # scrol to page down
         # scroll_down_yoffset(driver, el, 50)
         plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
@@ -302,27 +319,34 @@ def _in_viewport(driver, element):
     return driver.execute_script(script, element)
 
 
-def check_dialog_class(driver: webdriver.Chrome):
+def check_dialog_class(driver: webdriver.Chrome, mode):
     try:
         iframe = driver.find_element(By.XPATH, "//div[@id='everystraus_add_blur']")
         if iframe.get_attribute("style") == "display: block;":
             time.sleep(1)
             but_x = get_x_but(driver)
-            # ДОБАВИТЬ РЕАЛЬНОЕ ПЕРЕМЕЩЕНИЕ МЫШИ ИЛИ ПАЛЬЦА
-            but_x.click()
-        # action = ActionBuilder(driver)
-        # action.pointer_action.move_to_location(8, 8).click()
-        # action.perform()
-        # action.click()
-        # action.perform()
-        # el.click()
+            if mode == 'PC':
+                action = ActionChains(driver)
+                action.scroll_to_element(but_x).pause(0.5).perform()
+                move_to_element(driver, but_x)
+                time.sleep(0.3)
+                action.click(but_x)
+            elif mode == 'mobile':
+                touch_input = PointerInput(POINTER_TOUCH, "touch")
+                action = ActionBuilder(driver, mouse=touch_input)
+                action.pointer_action.move_to(but_x).pointer_down().move_by(2, 2)
+                action.perform()
+                time.sleep(0.3)
+                action.pointer_action.move_to(but_x).pointer_down().pointer_up()
+                action.perform()
     except:
+        # secure.log.write_log('Exception', e)
         pass
 
 
 # Функция для выполнения проверки в отдельном потоке
-def check_dialog_thread(stop, driver: webdriver.Chrome):
+def check_dialog_thread(stop, driver: webdriver.Chrome, mode):
     while True:
-        check_dialog_class(driver)
+        check_dialog_class(driver, mode)
         if stop():
             break

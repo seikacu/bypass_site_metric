@@ -1,41 +1,33 @@
+import random
 import threading
 import time
-import random
-
-# from selenium.webdriver import ActionChains
-
-import math
 
 from numpy.random import choice
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import WebDriverException
 
 import secure
-from navigation import get_but_main_el_select, apartment_scenario_mob
+
+from navigation import apartment_scenario, get_main_logo
+from navigation import apartment_scenario_mob
 from navigation import check_dialog_thread
-from navigation import get_slideshow_but
-from navigation import get_pictures
-from navigation import get_slideshow_close
-from navigation import apartment_scenario
+from navigation import get_but_main_el_select
 from navigation import get_but_more
 from navigation import get_element_by_href
+from navigation import get_pictures
+from navigation import get_slideshow_but
+from navigation import get_slideshow_close
 from navigation import move_to_element
 from navigation import random_func_main
-# from navigation import smoth_scrool
-
-from selen import get_selenium_driver
 from selen import get_coordinates
+from selen import get_selenium_driver
 from utils import get_target_locations
 
 time_delay = random.randrange(5, 30)
-
-# url = 'https://www.novostroyki-spb.ru/sk-pik?yclid=10057959807083085825'
-
-'''Используйте touch_actions для имитации операций с пальцами!'''
 
 
 def start_selen(mode):
@@ -45,7 +37,6 @@ def start_selen(mode):
 
     try:
         driver = get_selenium_driver(True, mode)
-        # target_latitude, target_longitude = get_coordinates(random.choice(target_locations))
         target_locations = get_target_locations()
         target_latitude, target_longitude = get_coordinates(target_locations)
         params = dict({
@@ -56,15 +47,24 @@ def start_selen(mode):
         driver.execute_cdp_cmd("Emulation.setGeolocationOverride", params)
         driver.get(url)
         # driver.add_cookie({'name': 'referer', 'value': f'{random.choice(refers)}'})
-        driver.add_cookie({'name': 'everystraus_ref', 'value': f'{random.choice(refers)}'})
+        # driver.add_cookie({'name': 'everystraus_ref', 'value': f'{random.choice(refers)}'})
 
         stop_threads = False
         # Создание и запуск потока для выполнения проверки на всплывающее диалоговое окно
-        thread = threading.Thread(target=check_dialog_thread, args=(lambda: stop_threads, driver,))
+        thread = threading.Thread(target=check_dialog_thread, args=(lambda: stop_threads, driver, mode,))
         thread.start()
 
         if mode == 'PC':
             action = ActionChains(driver)
+
+            logo = get_main_logo(driver)
+            action.scroll_to_element(logo).pause(0.5).perform()
+            time.sleep(time_delay)
+            driver.save_screenshot("screenshots/screenshot_00.png")
+            move_to_element(driver, logo)
+            time.sleep(0.3)
+            action.click(logo)
+
             links = random_func_main(driver)
             link = str(random.choice(links))
             href = link.split('/')[-1]
@@ -77,7 +77,7 @@ def start_selen(mode):
             time.sleep(time_delay)
             move_to_element(driver, but_main_el_select)
             time.sleep(0.3)
-            but_main_el_select.click()
+            action.click(but_main_el_select)
             main_element = get_element_by_href(driver, href)
             time.sleep(time_delay)
             driver.save_screenshot("screenshots/screenshot_02.png")
@@ -86,7 +86,7 @@ def start_selen(mode):
             time.sleep(0.5)
             move_to_element(driver, main_element)
             time.sleep(0.3)
-            main_element.click()
+            action.click(main_element)
             time.sleep(time_delay)
             driver.save_screenshot("screenshots/screenshot_03.png")
             but_more = get_but_more(driver)
@@ -107,7 +107,7 @@ def start_selen(mode):
                     driver.save_screenshot("screenshots/screenshot_04.png")
                     move_to_element(driver, element)
                     time.sleep(time_delay)
-                    element.click()
+                    action.click(element)
                     time.sleep(time_delay)
                     driver.save_screenshot("screenshots/screenshot_05.png")
             else:
@@ -119,7 +119,7 @@ def start_selen(mode):
                     driver.save_screenshot("screenshots/screenshot_06.png")
                     move_to_element(driver, but_more)
                     time.sleep(time_delay)
-                    but_more.click()
+                    action.click(but_more)
                     time.sleep(time_delay)
                     driver.save_screenshot("screenshots/screenshot_07.png")
                     but_more = get_but_more(driver)
@@ -135,12 +135,23 @@ def start_selen(mode):
             touch_input = PointerInput(POINTER_TOUCH, "touch")
             action = ActionBuilder(driver, mouse=touch_input)
 
+            logo = get_main_logo(driver)
+            action.pointer_action.move_to(logo).pointer_down().move_by(2, 2)
+            action.perform()
+            time.sleep(1)
+            driver.save_screenshot("screenshots/screenshot_00.png")
+            action.pointer_action.move_to(logo).pointer_down().pointer_up()
+            action.perform()
+            time.sleep(time_delay)
+
             links = random_func_main(driver)
             link = str(random.choice(links))
             href = link.split('/')[-1]
             main_el_select = href.split('-')[0]
             but_main_el_select = get_but_main_el_select(driver, main_el_select)
+
             # добавить рандомные движения мышью
+
             action.pointer_action.move_to(but_main_el_select).pointer_down().move_by(2, 2)
             action.perform()
             time.sleep(1)
@@ -149,7 +160,6 @@ def start_selen(mode):
             action.perform()
             time.sleep(time_delay)
             driver.save_screenshot("screenshots/screenshot_02.png")
-
             main_element = get_element_by_href(driver, href)
             time.sleep(time_delay)
             action.pointer_action.move_to(main_element).pointer_down().move_by(2, 2)
@@ -160,7 +170,6 @@ def start_selen(mode):
             action.perform()
             time.sleep(time_delay)
             driver.save_screenshot("screenshots/screenshot_04.png")
-
             but_more = get_but_more(driver)
             if but_more is None:
                 cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
@@ -205,22 +214,7 @@ def start_selen(mode):
         # driver.get('https://browserleaks.com/canvas')
         # driver.get('https://browserleaks.com/geo')
         # driver.get('https://browserleaks.com/javascript')
-        # action = ActionChains(driver)
-        # more_button = get_but_more(driver)
-        # for _ in range(5):
-        #     more_button.send_keys(Keys.ARROW_DOWN)
-        #     time.sleep(0.5)  # Adjust sleep duration as needed
-        # # action.scroll_to_element(more_button).pause(1).perform()
-        # action.click(more_button).pause(1).perform()
-        # scroll_to_el(action, more_button)
-        # loc_el = get_el_location(more_button)
-        # y = loc_el['y']
-        # scroll_down_to_element(driver, y)
-        # # scroll_down_page(driver)
-        # action.move_to_element(more_button)
-        # time.sleep(1)
-        # # driver.execute_script("arguments[0].scrollIntoView();", more_button[-1])
-        # action.perform()
+
     except WebDriverException as ex:
         secure.log.write_log('WebDriverException', ex)
         pass
@@ -285,24 +279,24 @@ def scenario_building(action, driver, hrefs):
     time.sleep(0.5)
     move_to_element(driver, element)
     time.sleep(time_delay)
-    element.click()
+    action.click(element)
     time.sleep(time_delay)
     pictures = get_pictures(driver)
     move_to_element(driver, pictures)
     time.sleep(0.5)
-    pictures.click()
+    action.click(pictures)
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
     move_to_element(driver, slide_show)
     time.sleep(0.5)
-    slide_show.click()
+    action.click(slide_show)
     time.sleep(15)
     slideshow_close = get_slideshow_close(driver)
     move_to_element(driver, slideshow_close)
     time.sleep(0.5)
-    slideshow_close.click()
+    action.click(slideshow_close)
     time.sleep(time_delay)
-    apartment_scenario(driver)
+    apartment_scenario(action, driver)
 
 
 def random_movements(driver, mouse):
@@ -344,44 +338,8 @@ def mouse_move(driver, x, y):
 #         return self
 
 
-def test_use_touch(driver):
-    driver.get('https://www.selenium.dev/selenium/web/pointerActionsPage.html')
-
-    pointer_area = driver.find_element(By.ID, "pointerArea")
-    touch_input = PointerInput(POINTER_TOUCH, "default touch")
-    action = ActionBuilder(driver, mouse=touch_input)
-    action.pointer_action.move_to(pointer_area).pointer_down().move_by(2, 2).pointer_up()
-    action.perform()
-
-    moves = driver.find_elements(By.CLASS_NAME, "pointermove")
-    move_to = properties(moves[0])
-    down = properties(driver.find_element(By.CLASS_NAME, "pointerdown"))
-    move_by = properties(moves[1])
-    up = properties(driver.find_element(By.CLASS_NAME, "pointerup"))
-
-    rect = pointer_area.rect
-    center_x = rect["x"] + rect["width"] / 2
-    center_y = rect["y"] + rect["height"] / 2
-
-    assert move_to["button"] == "-1"
-    assert move_to["pointerType"] == "pen"
-    assert move_to["pageX"] == str(math.floor(center_x))
-    assert move_to["pageY"] == str(math.floor(center_y))
-    assert down["button"] == "0"
-    assert down["pointerType"] == "pen"
-    assert down["pageX"] == str(math.floor(center_x))
-    assert down["pageY"] == str(math.floor(center_y))
-    assert move_by["button"] == "-1"
-    assert move_by["pointerType"] == "pen"
-    assert move_by["pageX"] == str(math.floor(center_x + 2))
-    assert move_by["pageY"] == str(math.floor(center_y + 2))
-    assert up["button"] == "0"
-    assert up["pointerType"] == "pen"
-    assert up["pageX"] == str(math.floor(center_x + 2))
-    assert up["pageY"] == str(math.floor(center_y + 2))
-
-
-url = 'https://www.novostroyki-spb.ru/'
+url = 'https://www.novostroyki-spb.ru/sk-pik?yclid=10057959807083085823О'
+# url = 'https://www.novostroyki-spb.ru/'
 
 links = [
     'https://www.novostroyki-spb.ru/rejting-stroitelnyh-kompanij-sankt-peterburga',
@@ -392,13 +350,13 @@ links = [
     'https://www.novostroyki-spb.ru/privacy-policy'
 ]
 
-refers = [
-    'https://www.google.com/',
-    'https://ya.ru/',
-    'https://yandex.ru/',
-    'https://mail.ru/',
-    'https://nova.rambler.ru/',
-    'https://search.yahoo.com/',
-    'https://www.bing.com/',
-    'https://duckduckgo.com/'
-]
+# refers = [
+#     'https://www.google.com/',
+#     'https://ya.ru/',
+#     'https://yandex.ru/',
+#     'https://mail.ru/',
+#     'https://nova.rambler.ru/',
+#     'https://search.yahoo.com/',
+#     'https://www.bing.com/',
+#     'https://duckduckgo.com/'
+# ]
