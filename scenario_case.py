@@ -14,6 +14,7 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException
 
+import secure
 from navigation import get_but_main_el_select, apartment_scenario_mob
 from navigation import check_dialog_thread
 from navigation import get_slideshow_but
@@ -220,9 +221,11 @@ def start_selen(mode):
         # time.sleep(1)
         # # driver.execute_script("arguments[0].scrollIntoView();", more_button[-1])
         # action.perform()
-    except WebDriverException:
+    except WebDriverException as ex:
+        secure.log.write_log('WebDriverException', ex)
         pass
     except Exception as e:
+        secure.log.write_log('Exception', e)
         print(e)
         pass
     finally:

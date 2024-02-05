@@ -23,7 +23,7 @@ def get_path_webdriver():
 
 
 def set_driver_options(options):
-    options.binary_location = "/usr/bin/chromium-browser"
+    options.binary_location = "/usr/bin/chromium"
     options.add_argument('--headless=new')
     options.add_argument("--no-sandbox")
     options.add_experimental_option("prefs", {
@@ -50,10 +50,13 @@ def get_selenium_driver(use_proxy, mode):
         mobile_emulation = {'deviceName': f'{random.choice(mob_devices)}'}
         # mobile_emulation = {'deviceName': 'Samsung Galaxy S22+'}
         options.add_experimental_option('mobileEmulation', mobile_emulation)
+        secure.log.write_log('mobile', mobile_emulation)
+        print(mobile_emulation)
         driver = webdriver.Chrome(options=options)
     elif mode == 'PC':
         ua = UserAgent()
         fake_browser = ua.random
+        secure.log.write_log('PC', fake_browser)
         print(fake_browser)
         options.add_argument(f'--user-agent={fake_browser}')
         caps = DesiredCapabilities().CHROME
@@ -72,7 +75,7 @@ mob_devices = [
     'iPhone SE',
     'iPhone XR',
     # 'iPhone 4',
-    # 'iPhone 5',
+    'iPhone 5',
     'iPhone 6',
     'iPhone 6 Plus',
     'iPhone 14 Pro Max',
@@ -104,7 +107,7 @@ mob_devices = [
     'Pixel 3',
     'Pixel 4',
     'Pixel 7',
-    'JioPhone 2',
+    # 'JioPhone 2',
     'Samsung Galaxy S8+',
     'Samsung Galaxy S20 Ultra',
     'iPad Mini',
@@ -112,7 +115,7 @@ mob_devices = [
     'iPad Pro',
     'Surface Pro 7',
     'Surface Duo',
-    'Galaxy Fold',
+    # 'Galaxy Fold',
     'Samsung Galaxy A51/71',
     'Nest Hub',
     'Nest Hub Max',

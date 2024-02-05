@@ -1,6 +1,7 @@
 import random
 import time
 
+import secure
 from scenario_case import start_selen
 
 
@@ -12,6 +13,7 @@ mode = [
 
 def main():
     print('START')
+    secure.log.create_log()
     while True:
         start_selen(random.choice(mode))
         # start_selen('mobile')
