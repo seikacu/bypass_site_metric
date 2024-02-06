@@ -12,8 +12,6 @@ from selenium.webdriver.common.by import By
 
 import secure
 
-from navigation import apartment_scenario, get_main_logo
-from navigation import apartment_scenario_mob
 from navigation import check_dialog_thread
 from navigation import get_but_main_el_select
 from navigation import get_but_more
@@ -21,8 +19,11 @@ from navigation import get_element_by_href
 from navigation import get_pictures
 from navigation import get_slideshow_but
 from navigation import get_slideshow_close
-from navigation import move_to_element
+from navigation import move_touch
 from navigation import random_func_main
+from navigation import scroll_move_click_pc
+from navigation import select_by_ref_mob
+from navigation import select_by_ref_pc
 from selen import get_coordinates
 from selen import get_selenium_driver
 from utils import get_target_locations
@@ -57,159 +58,99 @@ def start_selen(mode):
         if mode == 'PC':
             action = ActionChains(driver)
 
-            logo = get_main_logo(driver)
-            action.scroll_to_element(logo).pause(0.5).perform()
-            time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_00.png")
-            move_to_element(driver, logo)
-            time.sleep(0.3)
-            action.click(logo)
-
-            links = random_func_main(driver)
-            link = str(random.choice(links))
-            href = link.split('/')[-1]
-            main_el_select = href.split('-')[0]
-            but_main_el_select = get_but_main_el_select(driver, main_el_select)
-            time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_01.png")
-            action.scroll_to_element(but_main_el_select).pause(0.5).perform()
-            # smoth_scrool(driver, but_main_el_select)
-            time.sleep(time_delay)
-            move_to_element(driver, but_main_el_select)
-            time.sleep(0.3)
-            action.click(but_main_el_select)
-            main_element = get_element_by_href(driver, href)
-            time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_02.png")
-            # smoth_scrool(driver, main_element)
-            action.scroll_to_element(main_element).pause(0.5).perform()
-            time.sleep(0.5)
-            move_to_element(driver, main_element)
-            time.sleep(0.3)
-            action.click(main_element)
-            time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_03.png")
-            but_more = get_but_more(driver)
-            if but_more is None:
-                cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
-                hrefs = []
-                for card in cards_links:
-                    tag_a = card.find_element(By.TAG_NAME, "a")
-                    href = tag_a.get_attribute('href')
-                    hrefs.append(href)
+            li = select_by_ref_pc(driver)
+            teg_a = li.find_element(By.TAG_NAME, 'a')
+            hrer_name = teg_a.text
+            # href = teg_a.get_attribute("href")
+            if hrer_name == 'Все новостройки':
+                scroll_move_click_pc(action, driver, li)
+                scenario_all_buildings(action, driver)
+            elif hrer_name == 'Скидки и Акции':
+                scroll_move_click_pc(action, driver, li)
+                time.sleep(time_delay)
+            elif hrer_name == 'Новости':
+                scroll_move_click_pc(action, driver, li)
+                time.sleep(time_delay)
+                # Добавить рандомный выбор нажатия кнопки, или получить список карточек
+                but_more = get_but_more(driver)
+                if but_more is None:
+                    hrefs = get_cads_links(driver)
+                    if hrefs.__len__() > 0:
+                        # read_news(action, driver)
+                        pass
+                else:
+                    # while but_more is not None:
+                    #     time.sleep(time_delay)
+                    #     move_touch(action, driver, but_more)
+                    #     time.sleep(time_delay)
+                    #     driver.save_screenshot("screenshots/screenshot_08.png")
+                    #     but_more = get_but_more(driver)
+                    pass
+            elif hrer_name == 'Рейтинги':
+                scroll_move_click_pc(action, driver, li)
+                time.sleep(time_delay)
+                # ДОБАВИТЬ РАНДОМНЫЙ ВЫБОР ДЕШЕВЫХ ИЛИ ДОРОГИХ КВАРТИР
+                hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
                     scenario_building(action, driver, hrefs)
-                else:
-                    element = get_element_by_href(driver, "/agreement")
-                    action.scroll_to_element(element).pause(0.5).perform()
-                    # smoth_scrool(driver, element)
-                    time.sleep(0.5)
-                    driver.save_screenshot("screenshots/screenshot_04.png")
-                    move_to_element(driver, element)
-                    time.sleep(time_delay)
-                    action.click(element)
-                    time.sleep(time_delay)
-                    driver.save_screenshot("screenshots/screenshot_05.png")
-            else:
-                while but_more is not None:
-                    time.sleep(time_delay)
-                    action.scroll_to_element(but_more).pause(0.5).perform()
-                    # smoth_scrool(driver, but_more)
-                    time.sleep(0.5)
-                    driver.save_screenshot("screenshots/screenshot_06.png")
-                    move_to_element(driver, but_more)
-                    time.sleep(time_delay)
-                    action.click(but_more)
-                    time.sleep(time_delay)
-                    driver.save_screenshot("screenshots/screenshot_07.png")
-                    but_more = get_but_more(driver)
-                cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
-                hrefs = []
-                for card in cards_links:
-                    tag_a = card.find_element(By.TAG_NAME, "a")
-                    href = tag_a.get_attribute('href')
-                    hrefs.append(href)
+            elif hrer_name == 'Застройщики':
+                scroll_move_click_pc(action, driver, li)
+                time.sleep(time_delay)
+                table = driver.find_elements(By.TAG_NAME, 'tr')
+                developer = random.choice(table)
+                scroll_move_click_pc(action, driver, developer)
+                time.sleep(time_delay)
+                hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
                     scenario_building(action, driver, hrefs)
         elif mode == 'mobile':
             touch_input = PointerInput(POINTER_TOUCH, "touch")
             action = ActionBuilder(driver, mouse=touch_input)
 
-            logo = get_main_logo(driver)
-            action.pointer_action.move_to(logo).pointer_down().move_by(2, 2)
-            action.perform()
-            time.sleep(1)
-            driver.save_screenshot("screenshots/screenshot_00.png")
-            action.pointer_action.move_to(logo).pointer_down().pointer_up()
-            action.perform()
-            time.sleep(time_delay)
-
-            links = random_func_main(driver)
-            link = str(random.choice(links))
-            href = link.split('/')[-1]
-            main_el_select = href.split('-')[0]
-            but_main_el_select = get_but_main_el_select(driver, main_el_select)
-
-            # добавить рандомные движения мышью
-
-            action.pointer_action.move_to(but_main_el_select).pointer_down().move_by(2, 2)
-            action.perform()
-            time.sleep(1)
-            driver.save_screenshot("screenshots/screenshot_01.png")
-            action.pointer_action.move_to(but_main_el_select).pointer_down().pointer_up()
-            action.perform()
-            time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_02.png")
-            main_element = get_element_by_href(driver, href)
-            time.sleep(time_delay)
-            action.pointer_action.move_to(main_element).pointer_down().move_by(2, 2)
-            action.perform()
-            time.sleep(1)
-            driver.save_screenshot("screenshots/screenshot_03.png")
-            action.pointer_action.move_to(main_element).pointer_down().pointer_up()
-            action.perform()
-            time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_04.png")
-            but_more = get_but_more(driver)
-            if but_more is None:
-                cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
-                hrefs = []
-                for card in cards_links:
-                    tag_a = card.find_element(By.TAG_NAME, "a")
-                    href = tag_a.get_attribute('href')
-                    hrefs.append(href)
+            li = select_by_ref_mob(action, driver)
+            teg_a = li.find_element(By.TAG_NAME, 'a')
+            hrer_name = teg_a.text
+            # href = teg_a.get_attribute("href")
+            if hrer_name == 'Все новостройки':
+                move_touch(action, driver, li)
+                scenario_all_buildings_mob(action, driver)
+            elif hrer_name == 'Скидки и Акции':
+                move_touch(action, driver, li)
+                time.sleep(time_delay)
+            elif hrer_name == 'Рейтинг новостроек':
+                move_touch(action, driver, li)
+                time.sleep(time_delay)
+                # ДОБАВИТЬ РАНДОМНЫЙ ВЫБОР ДЕШЕВЫХ ИЛИ ДОРОГИХ КВАРТИР
+                hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
                     scenario_building_mob(action, driver, hrefs)
-                else:
-                    element = get_element_by_href(driver, "/agreement")
-                    action.pointer_action.move_to(element).pointer_down().move_by(2, 2)
-                    action.perform()
-                    time.sleep(1)
-                    driver.save_screenshot("screenshots/screenshot_05.png")
-                    action.pointer_action.move_to(element).pointer_down().pointer_up()
-                    action.perform()
-                    time.sleep(time_delay)
-                    driver.save_screenshot("screenshots/screenshot_06.png")
-            else:
-                while but_more is not None:
-                    time.sleep(time_delay)
-                    action.pointer_action.move_to(but_more).pointer_down().move_by(2, 2)
-                    action.perform()
-                    time.sleep(1)
-                    driver.save_screenshot("screenshots/screenshot_07.png")
-                    action.pointer_action.move_to(but_more).pointer_down().pointer_up()
-                    action.perform()
-                    time.sleep(time_delay)
-                    driver.save_screenshot("screenshots/screenshot_08.png")
-                    but_more = get_but_more(driver)
-                cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
-                hrefs = []
-                for card in cards_links:
-                    tag_a = card.find_element(By.TAG_NAME, "a")
-                    href = tag_a.get_attribute('href')
-                    hrefs.append(href)
+            elif hrer_name == 'Новости рынка':
+                move_touch(action, driver, li)
+                time.sleep(time_delay)
+                # Добавить рандомный выбор нажатия кнопки, или получить список карточек
+                hrefs = get_cads_links(driver)
+                if hrefs.__len__() > 0:
+                    # ДОБАВИТЬ ПРОСМОТР НОВОСТЕЙ
+                    pass
+            elif hrer_name == 'ТОП-30 застройщиков':
+                move_touch(action, driver, li)
+                time.sleep(time_delay)
+                table = driver.find_elements(By.TAG_NAME, 'tr')
+                developer = random.choice(table)
+                move_touch(action, driver, developer)
+                time.sleep(time_delay)
+                hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
                     scenario_building_mob(action, driver, hrefs)
+            elif hrer_name == 'Все застройщики':
+                move_touch(action, driver, li)
+                time.sleep(time_delay)
+                # ДОРАБОТАТЬ ФУНКЦИОНАЛ
+                # Добавить рандомный выбор нажатия кнопки, или получить список карточек
+                pass
+            elif hrer_name == 'Новостройки Москвы':
+                time.sleep(time_delay)
+                pass
 
         # driver.get('https://browserleaks.com/canvas')
         # driver.get('https://browserleaks.com/geo')
@@ -231,6 +172,89 @@ def start_selen(mode):
             thread.join()
 
 
+def get_cads_links(driver):
+    cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
+    hrefs = []
+    for card in cards_links:
+        tag_a = card.find_element(By.TAG_NAME, "a")
+        href = tag_a.get_attribute('href')
+        hrefs.append(href)
+    return hrefs
+
+
+def scenario_all_buildings_mob(action, driver):
+    links = random_func_main(driver)
+    link = str(random.choice(links))
+    href = link.split('/')[-1]
+    main_el_select = href.split('-')[0]
+    but_main_el_select = get_but_main_el_select(driver, main_el_select)
+    move_touch(action, driver, but_main_el_select)
+    time.sleep(time_delay)
+    driver.save_screenshot("screenshots/screenshot_02.png")
+    main_element = get_element_by_href(driver, href)
+    time.sleep(time_delay)
+    move_touch(action, driver, main_element)
+    time.sleep(time_delay)
+    driver.save_screenshot("screenshots/screenshot_04.png")
+    but_more = get_but_more(driver)
+    if but_more is None:
+        hrefs = get_cads_links(driver)
+        if hrefs.__len__() > 0:
+            scenario_building_mob(action, driver, hrefs)
+        else:
+            el = get_element_by_href(driver, "/agreement")
+            move_touch(action, driver, el)
+            time.sleep(time_delay)
+            driver.save_screenshot("screenshots/screenshot_06.png")
+    else:
+        while but_more is not None:
+            time.sleep(time_delay)
+            move_touch(action, driver, but_more)
+            time.sleep(time_delay)
+            driver.save_screenshot("screenshots/screenshot_08.png")
+            but_more = get_but_more(driver)
+        hrefs = get_cads_links(driver)
+        if hrefs.__len__() > 0:
+            scenario_building_mob(action, driver, hrefs)
+
+
+def scenario_all_buildings(action, driver):
+    links = random_func_main(driver)
+    link = str(random.choice(links))
+    href = link.split('/')[-1]
+    main_el_select = href.split('-')[0]
+    but_main_el_select = get_but_main_el_select(driver, main_el_select)
+    time.sleep(time_delay)
+    driver.save_screenshot("screenshots/screenshot_01.png")
+    scroll_move_click_pc(action, driver, but_main_el_select)
+    main_element = get_element_by_href(driver, href)
+    time.sleep(time_delay)
+    driver.save_screenshot("screenshots/screenshot_02.png")
+    scroll_move_click_pc(action, driver, main_element)
+    time.sleep(time_delay)
+    driver.save_screenshot("screenshots/screenshot_03.png")
+    but_more = get_but_more(driver)
+    if but_more is None:
+        hrefs = get_cads_links(driver)
+        if hrefs.__len__() > 0:
+            scenario_building(action, driver, hrefs)
+        else:
+            el = get_element_by_href(driver, "/agreement")
+            scroll_move_click_pc(action, driver, el)
+            time.sleep(time_delay)
+            driver.save_screenshot("screenshots/screenshot_05.png")
+    else:
+        while but_more is not None:
+            time.sleep(time_delay)
+            scroll_move_click_pc(action, driver, but_more)
+            time.sleep(time_delay)
+            driver.save_screenshot("screenshots/screenshot_07.png")
+            but_more = get_but_more(driver)
+        hrefs = get_cads_links(driver)
+        if hrefs.__len__() > 0:
+            scenario_building(action, driver, hrefs)
+
+
 def properties(element):
     kv = element.text.split(' ', 1)[1].split(', ')
     return {x[0]: x[1] for x in list(map(lambda item: item.split(': '), kv))}
@@ -239,64 +263,81 @@ def properties(element):
 def scenario_building_mob(action, driver, hrefs):
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
-    element = get_element_by_href(driver, href)
-    action.pointer_action.move_to(element).pointer_down().move_by(2, 2)
-    action.perform()
-    time.sleep(1)
-    action.pointer_action.move_to(element).pointer_down().pointer_up()
-    action.perform()
+    el = get_element_by_href(driver, href)
+    move_touch(action, driver, el)
     time.sleep(time_delay)
     pictures = get_pictures(driver)
-    action.pointer_action.move_to(pictures).pointer_down().move_by(2, 2)
-    action.perform()
-    time.sleep(1)
-    action.pointer_action.move_to(pictures).pointer_down().pointer_up()
-    action.perform()
+    move_touch(action, driver, pictures)
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
-    action.pointer_action.move_to(slide_show).pointer_down().move_by(2, 2)
-    action.perform()
-    time.sleep(1)
-    action.pointer_action.move_to(slide_show).pointer_down().pointer_up()
-    action.perform()
+    move_touch(action, driver, slide_show)
+    # !!!!!!!!!!!!!!!!!!!!
     time.sleep(15)
     slideshow_close = get_slideshow_close(driver)
-    action.pointer_action.move_to(slideshow_close).pointer_down().move_by(2, 2)
-    action.perform()
-    time.sleep(1)
-    action.pointer_action.move_to(slideshow_close).pointer_down().pointer_up()
-    action.perform()
+    move_touch(action, driver, slideshow_close)
     time.sleep(time_delay)
     apartment_scenario_mob(action, driver)
+
+
+def apartment_scenario_mob(action, driver):
+    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
+    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
+    el = random.choice(elements)
+    move_touch(action, driver, el)
+    # scrol to page down
+    # scroll_down_yoffset(driver, el, 50)
+    plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
+    # images = plans.find_elements(By.TAG_NAME, "//a")
+    # img = random.choice(images)
+    # time.sleep(time_delay)
+    # move_to_element(driver, img)
+    # time.sleep(0.5)
+    # img.click()
+    # time.sleep(time_delay)
+    # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
+    # move_to_element(driver, but_close)
+    # time.sleep(0.5)
+    # but_close.click()
 
 
 def scenario_building(action, driver, hrefs):
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
-    element = get_element_by_href(driver, href)
-    action.scroll_to_element(element).pause(0.5).perform()
-    # smoth_scrool(driver, element)
-    time.sleep(0.5)
-    move_to_element(driver, element)
-    time.sleep(time_delay)
-    action.click(element)
+    el = get_element_by_href(driver, href)
+    scroll_move_click_pc(action, driver, el)
     time.sleep(time_delay)
     pictures = get_pictures(driver)
-    move_to_element(driver, pictures)
-    time.sleep(0.5)
-    action.click(pictures)
+    scroll_move_click_pc(action, driver, pictures)
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
-    move_to_element(driver, slide_show)
-    time.sleep(0.5)
-    action.click(slide_show)
+    scroll_move_click_pc(action, driver, slide_show)
+    # ПОСЧИТАТЬ КОЛ-ВО КАРТИНОК И НА КАЖДУЮ КАТИНКУ 2 СЕКУНДЫ
     time.sleep(15)
     slideshow_close = get_slideshow_close(driver)
-    move_to_element(driver, slideshow_close)
-    time.sleep(0.5)
-    action.click(slideshow_close)
+    scroll_move_click_pc(action, driver, slideshow_close)
     time.sleep(time_delay)
     apartment_scenario(action, driver)
+
+
+def apartment_scenario(action, driver):
+    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
+    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
+    el = random.choice(elements)
+    scroll_move_click_pc(action, driver, el)
+    # scrol to page down
+    # scroll_down_yoffset(driver, el, 50)
+    plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
+    # images = plans.find_elements(By.TAG_NAME, "//a")
+    # img = random.choice(images)
+    # time.sleep(time_delay)
+    # move_to_element(driver, img)
+    # time.sleep(0.5)
+    # img.click()
+    # time.sleep(time_delay)
+    # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
+    # move_to_element(driver, but_close)
+    # time.sleep(0.5)
+    # but_close.click()
 
 
 def random_movements(driver, mouse):

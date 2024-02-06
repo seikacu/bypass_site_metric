@@ -11,19 +11,67 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 stop_threads = False
+
+mls = [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0
+]
+
 time_delay = random.randrange(3, 10)
+time_mls = random.choice(mls)
 
 
-def get_main_logo(driver: webdriver.Chrome):
-    teg = None
+def scroll_move_click_pc(action, driver, el):
+    action.scroll_to_element(el).pause(time_mls).perform()
+    time.sleep(time_delay)
+    driver.save_screenshot("screenshots/screenshot_00.png")
+    move_to_element(driver, el)
+    time.sleep(time_mls)
+    action.click(el).perform()
+
+
+def move_touch(action, driver, el):
+    action.pointer_action.move_to(el).pointer_down().move_by(2, 2)
+    action.perform()
+    time.sleep(time_mls)
+    driver.save_screenshot("screenshots/screenshot_01.png")
+    action.pointer_action.move_to(el).pointer_down().pointer_up()
+    action.perform()
+
+
+def select_by_ref_pc(driver: webdriver.Chrome):
+    li = None
     try:
-        el = driver.find_element(By.XPATH, "//div[@class='logo']")
-        teg = el.find_element(By.TAG_NAME, "a")
+        nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
+        lis = nav.find_elements(By.TAG_NAME, 'li')
+        li = random.choice(lis)
+        # li = lis[0]
     except NoSuchElementException:
         pass
-    return teg
+    return li
 
 
+def select_by_ref_mob(action, driver: webdriver.Chrome):
+    li = None
+    try:
+        nav_btn = driver.find_element(By.XPATH, "//label[contains(@class, 'nav-btn__label')]")
+        move_touch(action, driver, nav_btn)
+        time.sleep(time_delay)
+        nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
+        lis = nav.find_elements(By.TAG_NAME, 'li')
+        li = random.choice(lis)
+        # li = lis[0]
+    except NoSuchElementException:
+        pass
+    return li
 
 
 ''' Строка поиска новостроек '''
@@ -101,61 +149,6 @@ def scroll_down_yoffset(driver: webdriver.Chrome, element: WebElement, y):
 '''
     Вернуть рандомную ссылку на квартиры в наличии или документы застройщика
 '''
-
-
-def apartment_scenario(action, driver: webdriver.Chrome):
-    try:
-        section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
-        elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
-        el = random.choice(elements)
-        move_to_element(driver, el)
-        time.sleep(time_delay)
-        action.click(el)
-        # scrol to page down
-        # scroll_down_yoffset(driver, el, 50)
-        plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
-        # images = plans.find_elements(By.TAG_NAME, "//a")
-        # img = random.choice(images)
-        # time.sleep(time_delay)
-        # move_to_element(driver, img)
-        # time.sleep(0.5)
-        # img.click()
-        # time.sleep(time_delay)
-        # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-        # move_to_element(driver, but_close)
-        # time.sleep(0.5)
-        # but_close.click()
-    except NoSuchElementException:
-        pass
-
-
-def apartment_scenario_mob(action, driver: webdriver.Chrome):
-    try:
-        section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
-        elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
-        el = random.choice(elements)
-        action.pointer_action.move_to(el).pointer_down().move_by(2, 2)
-        action.perform()
-        time.sleep(1)
-        action.pointer_action.move_to(el).pointer_down().pointer_up()
-        action.perform()
-        # scrol to page down
-        # scroll_down_yoffset(driver, el, 50)
-        plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
-        # images = plans.find_elements(By.TAG_NAME, "//a")
-        # img = random.choice(images)
-        # time.sleep(time_delay)
-        # move_to_element(driver, img)
-        # time.sleep(0.5)
-        # img.click()
-        # time.sleep(time_delay)
-        # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-        # move_to_element(driver, but_close)
-        # time.sleep(0.5)
-        # but_close.click()
-    except NoSuchElementException:
-        pass
-
 
 '''
     Открыть просмотр картинок по застройщику
@@ -260,7 +253,7 @@ random_func_main = random.choice(func_main)
 
 # Прокрутить колесо мыши до элемента
 def move_to_element(driver: webdriver, element):
-    ActionChains(driver).pause(0.5).move_to_element(element).pause(0.5).perform()
+    ActionChains(driver).pause(time_mls).move_to_element(element).pause(time_mls).perform()
 
 
 '''
@@ -306,7 +299,7 @@ def smoth_scrool(driver, element):
 
 
 def scroll_to_el(action, el):
-    action.pause(0.5).move_to_element(el).pause(0.5)
+    action.pause(time_mls).move_to_element(el).pause(time_mls)
 
 
 def _in_viewport(driver, element):
@@ -327,16 +320,16 @@ def check_dialog_class(driver: webdriver.Chrome, mode):
             but_x = get_x_but(driver)
             if mode == 'PC':
                 action = ActionChains(driver)
-                action.scroll_to_element(but_x).pause(0.5).perform()
+                action.scroll_to_element(but_x).pause(time_mls).perform()
                 move_to_element(driver, but_x)
-                time.sleep(0.3)
-                action.click(but_x)
+                time.sleep(time_mls)
+                action.click(but_x).perform()
             elif mode == 'mobile':
                 touch_input = PointerInput(POINTER_TOUCH, "touch")
                 action = ActionBuilder(driver, mouse=touch_input)
                 action.pointer_action.move_to(but_x).pointer_down().move_by(2, 2)
                 action.perform()
-                time.sleep(0.3)
+                time.sleep(time_mls)
                 action.pointer_action.move_to(but_x).pointer_down().pointer_up()
                 action.perform()
     except:

@@ -11,6 +11,8 @@ mode = [
     'mobile'
 ]
 
+time_delay = random.randrange(10, 60)
+
 
 def main():
     print('START')
@@ -19,7 +21,7 @@ def main():
         start_selen(random.choice(mode))
         # start_selen('mobile')
         # start_selen('PC')
-        time.sleep(60)
+        time.sleep(time_delay)
     # print('END')
 
 
