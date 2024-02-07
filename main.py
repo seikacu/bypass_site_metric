@@ -18,8 +18,8 @@ def main():
     print('START')
     secure.log.create_log()
     while True:
-        start_selen(random.choice(mode))
-        # start_selen('mobile')
+        # start_selen(random.choice(mode))
+        start_selen('mobile')
         # start_selen('PC')
         time.sleep(time_delay)
     # print('END')

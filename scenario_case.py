@@ -8,6 +8,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
 
 import secure
@@ -15,6 +16,7 @@ import secure
 from navigation import check_dialog_thread
 from navigation import get_but_main_el_select
 from navigation import get_but_more
+from navigation import get_cads_links
 from navigation import get_element_by_href
 from navigation import get_pictures
 from navigation import get_slideshow_but
@@ -28,7 +30,7 @@ from selen import get_coordinates
 from selen import get_selenium_driver
 from utils import get_target_locations
 
-time_delay = random.randrange(5, 30)
+time_delay = random.randrange(5, 10)
 
 
 def start_selen(mode):
@@ -68,28 +70,32 @@ def start_selen(mode):
             elif hrer_name == 'Скидки и Акции':
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
+                # ДОБАВИТЬ ПЕРЕХОД НА СКИДКУ
             elif hrer_name == 'Новости':
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
-                # Добавить рандомный выбор нажатия кнопки, или получить список карточек
                 but_more = get_but_more(driver)
                 if but_more is None:
                     hrefs = get_cads_links(driver)
                     if hrefs.__len__() > 0:
-                        # read_news(action, driver)
-                        pass
+                        read_news_pc(action, driver, hrefs)
                 else:
-                    # while but_more is not None:
-                    #     time.sleep(time_delay)
-                    #     move_touch(action, driver, but_more)
-                    #     time.sleep(time_delay)
-                    #     driver.save_screenshot("screenshots/screenshot_08.png")
-                    #     but_more = get_but_more(driver)
-                    pass
+                    scrols = random.randrange(1, 10)
+                    for i in range(0, scrols):
+                        time.sleep(time_delay)
+                        scroll_move_click_pc(action, driver, but_more)
+                        time.sleep(time_delay)
+                        driver.save_screenshot("screenshots/screenshot_08.png")
+                        but_more = get_but_more(driver)
+                        i += 1
+                    hrefs = get_cads_links(driver)
+                    if hrefs.__len__() > 0:
+                        read_news_pc(action, driver, hrefs)
             elif hrer_name == 'Рейтинги':
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
-                # ДОБАВИТЬ РАНДОМНЫЙ ВЫБОР ДЕШЕВЫХ ИЛИ ДОРОГИХ КВАРТИР
+                top = get_min_max_top(driver)
+                scroll_move_click_pc(action, driver, top)
                 hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
                     scenario_building(action, driver, hrefs)
@@ -117,27 +123,32 @@ def start_selen(mode):
             elif hrer_name == 'Скидки и Акции':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
+                # ДОБАВИТЬ ПЕРЕХОД НА СКИДКУ
             elif hrer_name == 'Рейтинг новостроек':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
-                # ДОБАВИТЬ РАНДОМНЫЙ ВЫБОР ДЕШЕВЫХ ИЛИ ДОРОГИХ КВАРТИР
+                top = get_min_max_top(driver)
+                move_touch(action, driver, top)
                 hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
                     scenario_building_mob(action, driver, hrefs)
             elif hrer_name == 'Новости рынка':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
-                # Добавить рандомный выбор нажатия кнопки, или получить список карточек
-                hrefs = get_cads_links(driver)
-                if hrefs.__len__() > 0:
-                    # ДОБАВИТЬ ПРОСМОТР НОВОСТЕЙ
-                    pass
+                but_more = get_but_more(driver)
+                if but_more is None:
+                    hrefs = get_cads_links(driver)
+                    if hrefs.__len__() > 0:
+                        read_news_mob(action, driver, hrefs)
+                else:
+                    rand_tap_more_but(action, but_more, driver)
+                    hrefs = get_cads_links(driver)
+                    if hrefs.__len__() > 0:
+                        read_news_mob(action, driver, hrefs)
             elif hrer_name == 'ТОП-30 застройщиков':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
-                table = driver.find_elements(By.TAG_NAME, 'tr')
-                developer = random.choice(table)
-                move_touch(action, driver, developer)
+                change_developer(action, driver)
                 time.sleep(time_delay)
                 hrefs = get_cads_links(driver)
                 if hrefs.__len__() > 0:
@@ -145,12 +156,15 @@ def start_selen(mode):
             elif hrer_name == 'Все застройщики':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
-                # ДОРАБОТАТЬ ФУНКЦИОНАЛ
-                # Добавить рандомный выбор нажатия кнопки, или получить список карточек
-                pass
+                but_more = get_but_more(driver)
+                rand_tap_more_but(action, but_more, driver)
+                change_developer(action, driver)
+                time.sleep(time_delay)
+                hrefs = get_cads_links(driver)
+                if hrefs.__len__() > 0:
+                    scenario_building_mob(action, driver, hrefs)
             elif hrer_name == 'Новостройки Москвы':
                 time.sleep(time_delay)
-                pass
 
         # driver.get('https://browserleaks.com/canvas')
         # driver.get('https://browserleaks.com/geo')
@@ -172,14 +186,28 @@ def start_selen(mode):
             thread.join()
 
 
-def get_cads_links(driver):
-    cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
-    hrefs = []
-    for card in cards_links:
-        tag_a = card.find_element(By.TAG_NAME, "a")
-        href = tag_a.get_attribute('href')
-        hrefs.append(href)
-    return hrefs
+def get_min_max_top(driver):
+    punkts = driver.find_elements(By.XPATH, "//div[contains(@class, 'punkt')]")
+    punkt = random.choice(punkts)
+    parent = punkt.find_element(By.XPATH, "..")
+    return parent
+
+
+def rand_tap_more_but(action, but_more, driver):
+    scrols = random.randrange(1, 10)
+    for i in range(0, scrols):
+        time.sleep(time_delay)
+        move_touch(action, driver, but_more)
+        time.sleep(time_delay)
+        driver.save_screenshot("screenshots/screenshot_08.png")
+        but_more = get_but_more(driver)
+        i += 1
+
+
+def change_developer(action, driver):
+    table = driver.find_elements(By.TAG_NAME, 'tr')
+    developer = random.choice(table)
+    move_touch(action, driver, developer)
 
 
 def scenario_all_buildings_mob(action, driver):
@@ -272,7 +300,7 @@ def scenario_building_mob(action, driver, hrefs):
     slide_show = get_slideshow_but(driver)
     move_touch(action, driver, slide_show)
     # !!!!!!!!!!!!!!!!!!!!
-    time.sleep(15)
+    time.sleep(time_delay)
     slideshow_close = get_slideshow_close(driver)
     move_touch(action, driver, slideshow_close)
     time.sleep(time_delay)
@@ -298,6 +326,50 @@ def apartment_scenario_mob(action, driver):
     # move_to_element(driver, but_close)
     # time.sleep(0.5)
     # but_close.click()
+
+
+def read_news_pc(action, driver, hrefs):
+    href = str(random.choice(hrefs))
+    href = href.split('/')[-1]
+    el = get_element_by_href(driver, href)
+    scroll_move_click_pc(action, driver, el)
+    time.sleep(time_delay)
+    scrols = random.randrange(1, 5)
+    for i in range(0, scrols):
+        scroll_origin_amount(driver)
+        time.sleep(time_delay)
+
+
+def read_news_mob(action, driver, hrefs):
+    href = str(random.choice(hrefs))
+    href = href.split('/')[-1]
+    el = get_element_by_href(driver, href)
+    move_touch(action, driver, el)
+    time.sleep(time_delay)
+    el = get_element_by_href(driver, "/agreement")
+    scrols = random.randrange(1, 5)
+    # НЕ ЛИСТАЕТ НОВОСТЬ, ПАДАЕТ С ОШИБКОЙ
+    for i in range(0, scrols):
+        # move_to_offset(action, el)
+        time.sleep(time_delay)
+
+
+def move_to_offset(action, el):
+    delta_y = random.randint(100, 200)
+    action.pointer_action \
+        .move_to(el) \
+        .pointer_down() \
+        .move_by(2, 2, tilt_x=0, tilt_y=delta_y, twist=86) \
+        .pointer_up(0)
+    action.perform()
+
+
+def scroll_origin_amount(driver):
+    delta_y = random.randint(100, 200)
+    scroll_origin = ScrollOrigin.from_viewport(10, 10)
+    ActionChains(driver) \
+        .scroll_from_origin(scroll_origin, 0, delta_y) \
+        .perform()
 
 
 def scenario_building(action, driver, hrefs):

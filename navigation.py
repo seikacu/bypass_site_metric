@@ -12,6 +12,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 stop_threads = False
 
+
 mls = [
     0.1,
     0.2,
@@ -25,7 +26,8 @@ mls = [
     1.0
 ]
 
-time_delay = random.randrange(3, 10)
+
+time_delay = random.randrange(1, 5)
 time_mls = random.choice(mls)
 
 
@@ -53,7 +55,7 @@ def select_by_ref_pc(driver: webdriver.Chrome):
         nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
         li = random.choice(lis)
-        # li = lis[0]
+        # li = lis[4]
     except NoSuchElementException:
         pass
     return li
@@ -67,8 +69,8 @@ def select_by_ref_mob(action, driver: webdriver.Chrome):
         time.sleep(time_delay)
         nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        li = random.choice(lis)
-        # li = lis[0]
+        # li = random.choice(lis)
+        li = lis[5]
     except NoSuchElementException:
         pass
     return li
@@ -220,6 +222,24 @@ def get_hrefs_metro(driver: webdriver.Chrome):
     return links
 
 
+def get_cads_links(driver):
+    cards_links = driver.find_elements(By.XPATH, "//li[contains(@class,'card-list__item')]")
+    hrefs = []
+    for card in cards_links:
+        tag_a = card.find_element(By.TAG_NAME, "a")
+        href = tag_a.get_attribute('href')
+        hrefs.append(href)
+    return hrefs
+
+
+def get_click_but_more(action, driver):
+    but_more = get_but_more(driver)
+    if but_more is None:
+        time.sleep(time_delay)
+        move_touch(action, driver, but_more)
+        time.sleep(time_delay)
+
+
 ''' Получить элемент для перехода по ссылке '''
 
 
@@ -249,6 +269,11 @@ func_main = [
 ]
 
 random_func_main = random.choice(func_main)
+
+
+news_mode = [
+    get_cads_links,
+]
 
 
 # Прокрутить колесо мыши до элемента
