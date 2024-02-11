@@ -23,7 +23,8 @@ def get_path_webdriver():
 
 
 def set_driver_options(options):
-    options.binary_location = "/usr/bin/chromium-browser"
+    options.binary_location = "/usr/bin/chromium"
+    # options.binary_location = "/usr/bin/chromium-browser"
     options.add_argument('--headless=new')
     options.add_argument("--no-sandbox")
     options.add_experimental_option("prefs", {

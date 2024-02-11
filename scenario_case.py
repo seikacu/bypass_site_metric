@@ -2,7 +2,18 @@ import random
 import threading
 import time
 
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
+import secure
+
 from numpy.random import choice
+from selenium.common.exceptions import ElementNotInteractableException
+from selenium.common.exceptions import InvalidArgumentException
+from selenium.common.exceptions import InvalidSelectorException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchDriverException
+from selenium.common.exceptions import UnknownMethodException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
@@ -10,8 +21,6 @@ from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
-
-import secure
 
 from navigation import check_dialog_thread
 from navigation import get_but_main_el_select
@@ -63,14 +72,12 @@ def start_selen(mode):
             li = select_by_ref_pc(driver)
             teg_a = li.find_element(By.TAG_NAME, 'a')
             hrer_name = teg_a.text
-            # href = teg_a.get_attribute("href")
             if hrer_name == 'Все новостройки':
                 scroll_move_click_pc(action, driver, li)
                 scenario_all_buildings(action, driver)
             elif hrer_name == 'Скидки и Акции':
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
-                # ДОБАВИТЬ ПЕРЕХОД НА СКИДКУ
             elif hrer_name == 'Новости':
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
@@ -116,14 +123,12 @@ def start_selen(mode):
             li = select_by_ref_mob(action, driver)
             teg_a = li.find_element(By.TAG_NAME, 'a')
             hrer_name = teg_a.text
-            # href = teg_a.get_attribute("href")
             if hrer_name == 'Все новостройки':
                 move_touch(action, driver, li)
                 scenario_all_buildings_mob(action, driver)
             elif hrer_name == 'Скидки и Акции':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
-                # ДОБАВИТЬ ПЕРЕХОД НА СКИДКУ
             elif hrer_name == 'Рейтинг новостроек':
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
@@ -166,12 +171,33 @@ def start_selen(mode):
             elif hrer_name == 'Новостройки Москвы':
                 time.sleep(time_delay)
 
-        # driver.get('https://browserleaks.com/canvas')
-        # driver.get('https://browserleaks.com/geo')
-        # driver.get('https://browserleaks.com/javascript')
-
+    except InvalidArgumentException as ex:
+        secure.log.write_log('InvalidArgumentException', ex)
+        print(ex)
+        pass
+    except InvalidSelectorException as ex:
+        secure.log.write_log('InvalidSelectorException', ex)
+        print(ex)
+        pass
+    except ElementNotInteractableException as ex:
+        secure.log.write_log('ElementNotInteractableException', ex)
+        print(ex)
+        pass
+    except UnknownMethodException as ex:
+        secure.log.write_log('UnknownMethodException', ex)
+        print(ex)
+        pass
+    except NoSuchDriverException as ex:
+        secure.log.write_log('NoSuchDriverException', ex)
+        print(ex)
+        pass
+    except NoSuchElementException as ex:
+        secure.log.write_log('NoSuchElementException', ex)
+        print(ex)
+        pass
     except WebDriverException as ex:
         secure.log.write_log('WebDriverException', ex)
+        print(ex)
         pass
     except Exception as e:
         secure.log.write_log('Exception', e)
@@ -179,7 +205,7 @@ def start_selen(mode):
         pass
     finally:
         if driver:
-            driver.close()
+            # driver.close()
             driver.quit()
         if thread:
             stop_threads = True
@@ -299,33 +325,35 @@ def scenario_building_mob(action, driver, hrefs):
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
     move_touch(action, driver, slide_show)
-    # !!!!!!!!!!!!!!!!!!!!
-    time.sleep(time_delay)
+    count_img = get_count_img(driver)
+    time.sleep(count_img*2)
     slideshow_close = get_slideshow_close(driver)
     move_touch(action, driver, slideshow_close)
     time.sleep(time_delay)
     apartment_scenario_mob(action, driver)
 
 
+def get_count_img(driver):
+    img_count = driver.find_element(By.XPATH, "//span[@data-fancybox-count]")
+    return int(img_count.text)
+
+
 def apartment_scenario_mob(action, driver):
-    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
-    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
+    # WebDriverWait(driver, 10).until(EC.element_to_be_clickable(
+    #     (By.XPATH, "//section[contains(@class, 'section-house')]"))).click()
+    time.sleep(time_delay)
+    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section-house')]")
+    time.sleep(time_delay)
+    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
     el = random.choice(elements)
     move_touch(action, driver, el)
-    # scrol to page down
-    # scroll_down_yoffset(driver, el, 50)
-    plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
-    # images = plans.find_elements(By.TAG_NAME, "//a")
-    # img = random.choice(images)
-    # time.sleep(time_delay)
-    # move_to_element(driver, img)
-    # time.sleep(0.5)
-    # img.click()
-    # time.sleep(time_delay)
-    # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-    # move_to_element(driver, but_close)
-    # time.sleep(0.5)
-    # but_close.click()
+    plan = el.find_elements(By.XPATH, "//div[contains(@class, 'price-grid__plan')]")
+    time.sleep(time_delay)
+    move_touch(action, driver, plan)
+    time.sleep(time_delay)
+    but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
+    move_touch(action, driver, but_close)
+    time.sleep(time_delay)
 
 
 def read_news_pc(action, driver, hrefs):
@@ -334,7 +362,7 @@ def read_news_pc(action, driver, hrefs):
     el = get_element_by_href(driver, href)
     scroll_move_click_pc(action, driver, el)
     time.sleep(time_delay)
-    scrols = random.randrange(1, 5)
+    scrols = random.randrange(1, 7)
     for i in range(0, scrols):
         scroll_origin_amount(driver)
         time.sleep(time_delay)
@@ -346,29 +374,29 @@ def read_news_mob(action, driver, hrefs):
     el = get_element_by_href(driver, href)
     move_touch(action, driver, el)
     time.sleep(time_delay)
+
     el = get_element_by_href(driver, "/agreement")
+    delta_y = random.randint(-90, 90)
+    delta_x = random.randint(-90, 90)
+    delta_twist = random.randint(0, 90)
     scrols = random.randrange(1, 5)
     # НЕ ЛИСТАЕТ НОВОСТЬ, ПАДАЕТ С ОШИБКОЙ
     for i in range(0, scrols):
-        # move_to_offset(action, el)
+        action.pointer_action \
+            .move_to(el) \
+            .pointer_down() \
+            .move_by(2, 2, tilt_x=delta_x, tilt_y=delta_y, twist=delta_twist) \
+            .pointer_up(0)
+        action.perform()
         time.sleep(time_delay)
-
-
-def move_to_offset(action, el):
-    delta_y = random.randint(100, 200)
-    action.pointer_action \
-        .move_to(el) \
-        .pointer_down() \
-        .move_by(2, 2, tilt_x=0, tilt_y=delta_y, twist=86) \
-        .pointer_up(0)
-    action.perform()
 
 
 def scroll_origin_amount(driver):
     delta_y = random.randint(100, 200)
-    scroll_origin = ScrollOrigin.from_viewport(10, 10)
+    origin = driver.find_element(By.TAG_NAME, "h1")
+    scroll_origin = ScrollOrigin.from_viewport(origin)
     ActionChains(driver) \
-        .scroll_from_origin(scroll_origin, 0, delta_y) \
+        .scroll_from_origin(scroll_origin, 10, delta_y) \
         .perform()
 
 
@@ -383,8 +411,8 @@ def scenario_building(action, driver, hrefs):
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
     scroll_move_click_pc(action, driver, slide_show)
-    # ПОСЧИТАТЬ КОЛ-ВО КАРТИНОК И НА КАЖДУЮ КАТИНКУ 2 СЕКУНДЫ
-    time.sleep(15)
+    count_img = get_count_img(driver)
+    time.sleep(count_img*2)
     slideshow_close = get_slideshow_close(driver)
     scroll_move_click_pc(action, driver, slideshow_close)
     time.sleep(time_delay)
@@ -392,24 +420,15 @@ def scenario_building(action, driver, hrefs):
 
 
 def apartment_scenario(action, driver):
-    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section section-house')]")
-    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'ui-corner-all ui-state-default')]")
+    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section-house')]")
+    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
     el = random.choice(elements)
     scroll_move_click_pc(action, driver, el)
-    # scrol to page down
-    # scroll_down_yoffset(driver, el, 50)
-    plans = el.find_elements(By.XPATH, "//div[contains(@class, 'grid__cell grid__cell--center-h price-plan-cell')]")
-    # images = plans.find_elements(By.TAG_NAME, "//a")
-    # img = random.choice(images)
-    # time.sleep(time_delay)
-    # move_to_element(driver, img)
-    # time.sleep(0.5)
-    # img.click()
-    # time.sleep(time_delay)
-    # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-    # move_to_element(driver, but_close)
-    # time.sleep(0.5)
-    # but_close.click()
+    plan = el.find_elements(By.XPATH, "//div[contains(@class, 'price-grid__plan')]")
+    scroll_move_click_pc(action, driver, plan)
+    but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
+    scroll_move_click_pc(action, driver, but_close)
+    time.sleep(time_delay)
 
 
 def random_movements(driver, mouse):

@@ -69,8 +69,8 @@ def select_by_ref_mob(action, driver: webdriver.Chrome):
         time.sleep(time_delay)
         nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        # li = random.choice(lis)
-        li = lis[5]
+        li = random.choice(lis)
+        # li = lis[5]
     except NoSuchElementException:
         pass
     return li
@@ -278,7 +278,7 @@ news_mode = [
 
 # Прокрутить колесо мыши до элемента
 def move_to_element(driver: webdriver, element):
-    ActionChains(driver).pause(time_mls).move_to_element(element).pause(time_mls).perform()
+    ActionChains(driver).move_to_element(element).pause(time_mls).perform()
 
 
 '''
@@ -352,10 +352,11 @@ def check_dialog_class(driver: webdriver.Chrome, mode):
             elif mode == 'mobile':
                 touch_input = PointerInput(POINTER_TOUCH, "touch")
                 action = ActionBuilder(driver, mouse=touch_input)
+
                 action.pointer_action.move_to(but_x).pointer_down().move_by(2, 2)
                 action.perform()
                 time.sleep(time_mls)
-                action.pointer_action.move_to(but_x).pointer_down().pointer_up()
+                action.pointer_action.move_to(but_x).pointer_down().pointer_up( )
                 action.perform()
     except:
         # secure.log.write_log('Exception', e)
