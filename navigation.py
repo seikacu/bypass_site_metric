@@ -3,7 +3,7 @@ import time
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
-from selenium.webdriver import ActionChains
+from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
@@ -32,7 +32,7 @@ time_mls = random.choice(mls)
 
 
 def scroll_move_click_pc(action, driver, el):
-    action.scroll_to_element(el).pause(time_mls).perform()
+    action.scroll_to_element(el).perform()
     time.sleep(time_delay)
     driver.save_screenshot("screenshots/screenshot_00.png")
     move_to_element(driver, el)
@@ -317,6 +317,24 @@ def scroll_down_to_element(driver, y, speed=100):
         new_height = driver.execute_script("return document.body.scrollHeight")
         if new_height >= y:
             break
+
+
+mls_05 = [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5
+]
+
+
+def scrooll_down(actions):
+    for _ in range(5):
+        actions.send_keys(Keys.ARROW_DOWN)
+        actions.perform()
+        time.sleep(random.choice(mls_05))
+
+
 
 
 def smoth_scrool(driver, element):
