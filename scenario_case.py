@@ -2,9 +2,6 @@ import random
 import threading
 import time
 
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
-
 import secure
 
 from numpy.random import choice
@@ -28,6 +25,7 @@ from navigation import get_but_more
 from navigation import get_cads_links
 from navigation import get_element_by_href
 from navigation import get_pictures
+from navigation import get_pictures_progres
 from navigation import get_slideshow_but
 from navigation import get_slideshow_close
 from navigation import move_touch
@@ -67,18 +65,32 @@ def start_selen(mode):
         thread.start()
 
         if mode == 'PC':
+            print("mode - PC")
+            secure.log.write_log('mode', 'PC')
             action = ActionChains(driver)
 
             li = select_by_ref_pc(driver)
             teg_a = li.find_element(By.TAG_NAME, 'a')
             hrer_name = teg_a.text
             if hrer_name == 'Все новостройки':
+                print("sub mode - Все новостройки")
+                secure.log.write_log('sub mode', 'Все новостройки')
                 scroll_move_click_pc(action, driver, li)
                 scenario_all_buildings(action, driver)
             elif hrer_name == 'Скидки и Акции':
+                print("sub mode - Скидки и Акции")
+                secure.log.write_log('sub mode', 'Скидки и Акции')
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
+                el = get_element_by_href(driver, "/agreement")
+                scroll_move_click_pc(action, driver, el)
+                time.sleep(time_delay)
+                el = get_element_by_href(driver, "/agreement")
+                scroll_move_click_pc(action, driver, el)
+                time.sleep(time_delay)
             elif hrer_name == 'Новости':
+                print("sub mode - Новости")
+                secure.log.write_log('sub mode', 'Новости')
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
                 but_more = get_but_more(driver)
@@ -92,13 +104,15 @@ def start_selen(mode):
                         time.sleep(time_delay)
                         scroll_move_click_pc(action, driver, but_more)
                         time.sleep(time_delay)
-                        driver.save_screenshot("screenshots/screenshot_08.png")
+                        # driver.save_screenshot("screenshots/screenshot_08.png")
                         but_more = get_but_more(driver)
                         i += 1
                     hrefs = get_cads_links(driver)
                     if hrefs.__len__() > 0:
                         read_news_pc(action, driver, hrefs)
             elif hrer_name == 'Рейтинги':
+                print("sub mode - Рейтинги")
+                secure.log.write_log('sub mode', 'Рейтинги')
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
                 top = get_min_max_top(driver)
@@ -107,6 +121,8 @@ def start_selen(mode):
                 if hrefs.__len__() > 0:
                     scenario_building(action, driver, hrefs)
             elif hrer_name == 'Застройщики':
+                print("sub mode - Застройщики")
+                secure.log.write_log('sub mode', 'Застройщики')
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
                 table = driver.find_elements(By.TAG_NAME, 'tr')
@@ -117,6 +133,8 @@ def start_selen(mode):
                 if hrefs.__len__() > 0:
                     scenario_building(action, driver, hrefs)
         elif mode == 'mobile':
+            print("mode - mobile")
+            secure.log.write_log('mode', 'mobile')
             touch_input = PointerInput(POINTER_TOUCH, "touch")
             action = ActionBuilder(driver, mouse=touch_input)
 
@@ -124,12 +142,18 @@ def start_selen(mode):
             teg_a = li.find_element(By.TAG_NAME, 'a')
             hrer_name = teg_a.text
             if hrer_name == 'Все новостройки':
+                print("sub mode - Все новостройки")
+                secure.log.write_log('sub mode', 'Все новостройки')
                 move_touch(action, driver, li)
                 scenario_all_buildings_mob(action, driver)
             elif hrer_name == 'Скидки и Акции':
+                print("sub mode - Скидки и Акции")
+                secure.log.write_log('sub mode', 'Скидки и Акции')
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
             elif hrer_name == 'Рейтинг новостроек':
+                print("sub mode - Рейтинг новостроек")
+                secure.log.write_log('sub mode', 'Рейтинг новостроек')
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
                 top = get_min_max_top(driver)
@@ -138,6 +162,8 @@ def start_selen(mode):
                 if hrefs.__len__() > 0:
                     scenario_building_mob(action, driver, hrefs)
             elif hrer_name == 'Новости рынка':
+                print("sub mode - Новости рынка")
+                secure.log.write_log('sub mode', 'Новости рынка')
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
                 but_more = get_but_more(driver)
@@ -151,6 +177,8 @@ def start_selen(mode):
                     if hrefs.__len__() > 0:
                         read_news_mob(action, driver, hrefs)
             elif hrer_name == 'ТОП-30 застройщиков':
+                print("sub mode - ТОП-30 застройщиков")
+                secure.log.write_log('sub mode', 'ТОП-30 застройщиков')
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
                 change_developer(action, driver)
@@ -159,6 +187,8 @@ def start_selen(mode):
                 if hrefs.__len__() > 0:
                     scenario_building_mob(action, driver, hrefs)
             elif hrer_name == 'Все застройщики':
+                print("sub mode - Все застройщики")
+                secure.log.write_log('sub mode', 'Все застройщики')
                 move_touch(action, driver, li)
                 time.sleep(time_delay)
                 but_more = get_but_more(driver)
@@ -169,6 +199,8 @@ def start_selen(mode):
                 if hrefs.__len__() > 0:
                     scenario_building_mob(action, driver, hrefs)
             elif hrer_name == 'Новостройки Москвы':
+                print("sub mode - Новостройки Москвы")
+                secure.log.write_log('sub mode', 'Новостройки Москвы')
                 time.sleep(time_delay)
 
     except InvalidArgumentException as ex:
@@ -279,14 +311,14 @@ def scenario_all_buildings(action, driver):
     main_el_select = href.split('-')[0]
     but_main_el_select = get_but_main_el_select(driver, main_el_select)
     time.sleep(time_delay)
-    driver.save_screenshot("screenshots/screenshot_01.png")
+    # driver.save_screenshot("screenshots/screenshot_01.png")
     scroll_move_click_pc(action, driver, but_main_el_select)
     main_element = get_element_by_href(driver, href)
     time.sleep(time_delay)
-    driver.save_screenshot("screenshots/screenshot_02.png")
+    # driver.save_screenshot("screenshots/screenshot_02.png")
     scroll_move_click_pc(action, driver, main_element)
     time.sleep(time_delay)
-    driver.save_screenshot("screenshots/screenshot_03.png")
+    # driver.save_screenshot("screenshots/screenshot_03.png")
     but_more = get_but_more(driver)
     if but_more is None:
         hrefs = get_cads_links(driver)
@@ -296,13 +328,16 @@ def scenario_all_buildings(action, driver):
             el = get_element_by_href(driver, "/agreement")
             scroll_move_click_pc(action, driver, el)
             time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_05.png")
+            el = get_element_by_href(driver, "/agreement")
+            scroll_move_click_pc(action, driver, el)
+            time.sleep(time_delay)
+            # driver.save_screenshot("screenshots/screenshot_05.png")
     else:
         while but_more is not None:
             time.sleep(time_delay)
             scroll_move_click_pc(action, driver, but_more)
             time.sleep(time_delay)
-            driver.save_screenshot("screenshots/screenshot_07.png")
+            # driver.save_screenshot("screenshots/screenshot_07.png")
             but_more = get_but_more(driver)
         hrefs = get_cads_links(driver)
         if hrefs.__len__() > 0:
@@ -339,8 +374,6 @@ def get_count_img(driver):
 
 
 def apartment_scenario_mob(action, driver):
-    # WebDriverWait(driver, 10).until(EC.element_to_be_clickable(
-    #     (By.XPATH, "//section[contains(@class, 'section-house')]"))).click()
     time.sleep(time_delay)
     section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section-house')]")
     time.sleep(time_delay)
@@ -362,6 +395,7 @@ def read_news_pc(action, driver, hrefs):
     el = get_element_by_href(driver, href)
     scroll_move_click_pc(action, driver, el)
     time.sleep(time_delay)
+    # ПЕРЕДЕЛАТЬ - ЛИСТАТЬ НОВОСТЬ ДО КОНЦА СТРАНИЦЫ, Т.Е. ЧИТАТЬ
     scrols = random.randrange(1, 7)
     for i in range(0, scrols):
         scroll_origin_amount(driver)
@@ -416,19 +450,45 @@ def scenario_building(action, driver, hrefs):
     slideshow_close = get_slideshow_close(driver)
     scroll_move_click_pc(action, driver, slideshow_close)
     time.sleep(time_delay)
-    apartment_scenario(action, driver)
+
+    progres = get_pictures_progres(driver)
+    if progres:
+        scroll_move_click_pc(action, driver, progres)
+        time.sleep(time_delay)
+        slide_show = get_slideshow_but(driver)
+        scroll_move_click_pc(action, driver, slide_show)
+        count_img = get_count_img(driver)
+        time.sleep(count_img*2)
+        slideshow_close = get_slideshow_close(driver)
+        scroll_move_click_pc(action, driver, slideshow_close)
+        time.sleep(time_delay)
 
 
 def apartment_scenario(action, driver):
-    section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section-house')]")
-    elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
-    el = random.choice(elements)
-    scroll_move_click_pc(action, driver, el)
-    plan = el.find_elements(By.XPATH, "//div[contains(@class, 'price-grid__plan')]")
-    scroll_move_click_pc(action, driver, plan)
-    but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-    scroll_move_click_pc(action, driver, but_close)
+    progres = get_pictures_progres(driver)
+    scroll_move_click_pc(action, driver, progres)
     time.sleep(time_delay)
+    slide_show = get_slideshow_but(driver)
+    scroll_move_click_pc(action, driver, slide_show)
+    count_img = get_count_img(driver)
+    time.sleep(count_img*2)
+    slideshow_close = get_slideshow_close(driver)
+    scroll_move_click_pc(action, driver, slideshow_close)
+    time.sleep(time_delay)
+
+    # label = driver.find_element(By.XPATH, "//label[contains(@class, 'filter-checkbox__label apart')]")
+    # scroll_move_click_pc(action, driver, label)
+    # section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section-house')]")
+    # elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
+    # el = random.choice(elements)
+    # scroll_move_click_pc(action, driver, el)
+    # # ПУСТОЕ ЗНАЧЕНИЕ - ПРОВЕРИТЬ!!!!
+    # plans = el.find_elements(By.XPATH, "//a[contains(@class, 'price-grid__plan')]")
+    #
+    # scroll_move_click_pc(action, driver, plan)
+    # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
+    # scroll_move_click_pc(action, driver, but_close)
+    # time.sleep(time_delay)
 
 
 def random_movements(driver, mouse):

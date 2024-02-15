@@ -13,6 +13,8 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
+import secure
+
 stop_threads = False
 
 
@@ -34,11 +36,37 @@ time_delay = random.randrange(1, 5)
 time_mls = random.choice(mls)
 
 
-def scroll_move_click_pc(action, driver, el):
-    action.scroll_to_element(el).perform()
+def scroll_move_click_pc(action, driver: webdriver.Chrome, el):
+    offset = int(driver.get_window_size()['height'])
+    page_y_offset = driver.execute_script('return window.pageYOffset;')
+    offset += page_y_offset
+    delta_y = int(el.rect['y'])
+    if delta_y < page_y_offset:
+        print('Двигаем назад!!!')
+        secure.log.write_log('scroll_move_click_pc', 'Нужно настроить сколлинг назад!!!')
+    while offset < delta_y + 200:
+        count = 0
+        if delta_y > 0 and delta_y >= 100:
+            count = random.randrange(0, 100)
+        elif delta_y < 0 and delta_y <= -100:
+            count = random.randrange(-100, 0)
+        # elif (0 < y < 100) or (0 > y > -100):
+        elif 0 < delta_y < 100:
+            count = delta_y
+            move_mouse(action)
+        elif 0 > delta_y > -100:
+            count = delta_y
+        # elif 0 > y > -100:
+        #     count = y
+        # if count >= 100 or count <= -100:
+        action.scroll_by_amount(0, count).perform()
+        time.sleep(time_mls)  # Adjust sleep duration as needed
+        offset += count
+    # action.scroll_to_element(el).pause(time_mls).perform()
     time.sleep(time_delay)
-    driver.save_screenshot("screenshots/screenshot_00.png")
+    # driver.save_screenshot("screenshots/screenshot_00.png")
     move_to_element(driver, el)
+    # move_mouse(action)
     time.sleep(time_mls)
     action.click(el).perform()
 
@@ -57,8 +85,8 @@ def select_by_ref_pc(driver: webdriver.Chrome):
     try:
         nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        li = random.choice(lis)
-        # li = lis[4]
+        # li = random.choice(lis)
+        li = lis[2]
     except NoSuchElementException:
         pass
     return li
@@ -169,6 +197,18 @@ def get_pictures(driver: webdriver.Chrome):
     return el
 
 
+def get_pictures_progres(driver: webdriver.Chrome):
+    el = None
+    try:
+        els = driver.find_elements(By.XPATH, '//div[contains(@class, "carousel__slide is-selected")]')
+        if len(els) < 2:
+            return el
+        elif len(els) == 2:
+            return els[1]
+    except NoSuchElementException:
+        pass
+
+
 '''
     Найти кнопку запустить слайдшоу 
 '''
@@ -260,9 +300,9 @@ def get_but_main_el_select(driver: webdriver, main_el_select):
     elif main_el_select == 'novostrojki':
         return links_btns[1]
     elif main_el_select == 'zhk':
-        return links_btns[3]
+        return links_btns[2]
     else:
-        return links_btns[4]
+        return links_btns[3]
 
 
 func_main = [
@@ -362,11 +402,11 @@ def check_dialog_class(driver: webdriver.Chrome, mode):
     try:
         iframe = driver.find_element(By.XPATH, "//div[@id='everystraus_add_blur']")
         if iframe.get_attribute("style") == "display: block;":
-            time.sleep(1)
+            # time.sleep(1)
             but_x = get_x_but(driver)
             if mode == 'PC':
                 action = ActionChains(driver)
-                action.scroll_to_element(but_x).pause(time_mls).perform()
+                # action.scroll_to_element(but_x).pause(time_mls).perform()
                 move_to_element(driver, but_x)
                 time.sleep(time_mls)
                 action.click(but_x).perform()
@@ -411,15 +451,16 @@ def interpolate_move():
     return [x_i, y_i]
 
 
-def move_mouse(action, start_element):
+def move_mouse(action):
     # First, go to your start point or Element:
-    action.move_to_element(start_element)
-    action.perform()
+    # action.move_to_element(start_element)
+    # action.perform()
 
     for mouse_x, mouse_y in zip(interpolate_move()[0], interpolate_move()[1]):
         action.move_by_offset(mouse_x, mouse_y)
         action.perform()
         print(mouse_x, mouse_y)
+        secure.log.write_log('move_mouse', f'{mouse_x}, {mouse_y}')
 
 
 # Функция для выполнения проверки в отдельном потоке
