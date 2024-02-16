@@ -71,6 +71,40 @@ def scroll_move_click_pc(action, driver: webdriver.Chrome, el):
     action.click(el).perform()
 
 
+def scroll_down_screen(action, driver: webdriver.Chrome, el):
+    page_y_offset = driver.execute_script('return window.pageYOffset;')
+    offset += page_y_offset
+    delta_y = int(el.rect['y'])
+    if delta_y < page_y_offset:
+        print('Двигаем назад!!!')
+        secure.log.write_log('scroll_move_click_pc', 'Нужно настроить сколлинг назад!!!')
+    while offset < delta_y + 200:
+        count = 0
+        if delta_y > 0 and delta_y >= 100:
+            count = random.randrange(0, 100)
+        elif delta_y < 0 and delta_y <= -100:
+            count = random.randrange(-100, 0)
+        # elif (0 < y < 100) or (0 > y > -100):
+        elif 0 < delta_y < 100:
+            count = delta_y
+            move_mouse(action)
+        elif 0 > delta_y > -100:
+            count = delta_y
+        # elif 0 > y > -100:
+        #     count = y
+        # if count >= 100 or count <= -100:
+        action.scroll_by_amount(0, count).perform()
+        time.sleep(time_mls)  # Adjust sleep duration as needed
+        offset += count
+    # action.scroll_to_element(el).pause(time_mls).perform()
+    time.sleep(time_delay)
+    # driver.save_screenshot("screenshots/screenshot_00.png")
+    move_to_element(driver, el)
+    # move_mouse(action)
+    time.sleep(time_mls)
+    action.click(el).perform()
+
+
 def move_touch(action, driver, el):
     action.pointer_action.move_to(el).pointer_down().move_by(2, 2)
     action.perform()
@@ -86,7 +120,7 @@ def select_by_ref_pc(driver: webdriver.Chrome):
         nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
         # li = random.choice(lis)
-        li = lis[0]
+        li = lis[2]
     except NoSuchElementException:
         pass
     return li

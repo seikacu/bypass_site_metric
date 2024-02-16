@@ -19,7 +19,7 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.actions.wheel_input import ScrollOrigin
 from selenium.webdriver.common.by import By
 
-from navigation import check_dialog_thread
+from navigation import check_dialog_thread, scroll_down_screen
 from navigation import get_but_main_el_select
 from navigation import get_but_more
 from navigation import get_cads_links
@@ -94,22 +94,22 @@ def start_selen(mode):
                 scroll_move_click_pc(action, driver, li)
                 time.sleep(time_delay)
                 but_more = get_but_more(driver)
-                if but_more is None:
-                    hrefs = get_cads_links(driver)
-                    if hrefs.__len__() > 0:
-                        read_news_pc(action, driver, hrefs)
-                else:
-                    scrols = random.randrange(1, 10)
-                    for i in range(0, scrols):
-                        time.sleep(time_delay)
-                        scroll_move_click_pc(action, driver, but_more)
-                        time.sleep(time_delay)
-                        # driver.save_screenshot("screenshots/screenshot_08.png")
-                        but_more = get_but_more(driver)
-                        i += 1
-                    hrefs = get_cads_links(driver)
-                    if hrefs.__len__() > 0:
-                        read_news_pc(action, driver, hrefs)
+                # if but_more is None:
+                #     hrefs = get_cads_links(driver)
+                #     if hrefs.__len__() > 0:
+                #         read_news_pc(action, driver, hrefs)
+                # else:
+                scrols = random.randrange(1, 10)
+                for i in range(0, scrols):
+                    # time.sleep(time_delay)
+                    scroll_move_click_pc(action, driver, but_more)
+                    # time.sleep(time_delay)
+                    # driver.save_screenshot("screenshots/screenshot_08.png")
+                    but_more = get_but_more(driver)
+                    i += 1
+                hrefs = get_cads_links(driver)
+                if hrefs.__len__() > 0:
+                    read_news_pc(action, driver, hrefs)
             elif hrer_name == 'Рейтинги':
                 print("sub mode - Рейтинги")
                 secure.log.write_log('sub mode', 'Рейтинги')
@@ -396,10 +396,13 @@ def read_news_pc(action, driver, hrefs):
     scroll_move_click_pc(action, driver, el)
     time.sleep(time_delay)
     # ПЕРЕДЕЛАТЬ - ЛИСТАТЬ НОВОСТЬ ДО КОНЦА СТРАНИЦЫ, Т.Е. ЧИТАТЬ
-    scrols = random.randrange(1, 7)
-    for i in range(0, scrols):
-        scroll_origin_amount(driver)
-        time.sleep(time_delay)
+    offset_y = int(driver.get_window_size()['height'])
+
+    scroll_down_screen(action, driver, offset_y)
+    # scrols = random.randrange(1, 7)
+    # for i in range(0, scrols):
+    #     scroll_origin_amount(driver)
+    #     time.sleep(time_delay)
 
 
 def read_news_mob(action, driver, hrefs):
@@ -441,37 +444,27 @@ def scenario_building(action, driver, hrefs):
     scroll_move_click_pc(action, driver, el)
     time.sleep(time_delay)
     pictures = get_pictures(driver)
-    scroll_move_click_pc(action, driver, pictures)
-    time.sleep(time_delay)
-    slide_show = get_slideshow_but(driver)
-    scroll_move_click_pc(action, driver, slide_show)
-    count_img = get_count_img(driver)
-    time.sleep(count_img*2)
-    slideshow_close = get_slideshow_close(driver)
-    scroll_move_click_pc(action, driver, slideshow_close)
-    time.sleep(time_delay)
+    apartment_scene(action, driver, pictures)
 
     progres = get_pictures_progres(driver)
     if progres:
-        scroll_move_click_pc(action, driver, progres)
+        apartment_scene(action, driver, progres)
+    else:
+        el = get_element_by_href(driver, "/agreement")
+        scroll_move_click_pc(action, driver, el)
         time.sleep(time_delay)
-        slide_show = get_slideshow_but(driver)
-        scroll_move_click_pc(action, driver, slide_show)
-        count_img = get_count_img(driver)
-        time.sleep(count_img*2)
-        slideshow_close = get_slideshow_close(driver)
-        scroll_move_click_pc(action, driver, slideshow_close)
+        el = get_element_by_href(driver, "/agreement")
+        scroll_move_click_pc(action, driver, el)
         time.sleep(time_delay)
 
 
-def apartment_scenario(action, driver):
-    progres = get_pictures_progres(driver)
-    scroll_move_click_pc(action, driver, progres)
+def apartment_scene(action, driver, element):
+    scroll_move_click_pc(action, driver, element)
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
     scroll_move_click_pc(action, driver, slide_show)
     count_img = get_count_img(driver)
-    time.sleep(count_img*2)
+    time.sleep(count_img * 2)
     slideshow_close = get_slideshow_close(driver)
     scroll_move_click_pc(action, driver, slideshow_close)
     time.sleep(time_delay)
