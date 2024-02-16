@@ -86,7 +86,7 @@ def select_by_ref_pc(driver: webdriver.Chrome):
         nav = driver.find_element(By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
         # li = random.choice(lis)
-        li = lis[2]
+        li = lis[0]
     except NoSuchElementException:
         pass
     return li
