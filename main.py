@@ -27,8 +27,9 @@ def main():
         time_diff = time_end - time_start
         tsecs = time_diff.total_seconds()
         print(f'[INFO] Script worked in mode for {tsecs} seconds.')
-        secure.log.write_log('[INFO]', f'Script worked in mode {mode} for {tsecs} seconds.')
-        # time.sleep(time_delay)
+        secure.log.write_log(
+            '[INFO]', f'Script worked in mode {mode} for {tsecs} seconds.')
+        time.sleep(time_delay)
     # print('END')
 
 
