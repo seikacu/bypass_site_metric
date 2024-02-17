@@ -4,15 +4,15 @@ import random
 
 
 def convert_csv_to_json():
-    with open('geo.csv') as f:
+    with open('geo.csv', encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)
-    with open('geo.json', 'w') as f:
+    with open('geo.json', 'w', encoding="utf-8") as f:
         json.dump(rows, f)
 
 
 def read_json():
-    return json.load(open('geo.json'))
+    return json.load(open('geo.json', encoding="utf-8"))
 
 
 def get_target_locations():

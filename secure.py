@@ -82,7 +82,7 @@ class Proxy:
 
 def get_proxy_list(file_name):
     proxy_list = []
-    with open(file_name) as f:
+    with open(file_name, encoding="utf-8") as f:
         for line in f:
             proxy_line = []
             user = line.split(':')[0]

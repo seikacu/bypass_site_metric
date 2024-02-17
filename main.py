@@ -21,8 +21,8 @@ def main():
     while True:
         time_start = datetime.datetime.now()
         # start_selen(random.choice(mode))
-        # start_selen('mobile')
-        start_selen('PC')
+        start_selen('mobile')
+        # start_selen('PC')
         time_end = datetime.datetime.now()
         time_diff = time_end - time_start
         tsecs = time_diff.total_seconds()

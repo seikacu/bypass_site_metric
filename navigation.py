@@ -123,8 +123,8 @@ def select_by_ref_mob(action: ActionChains, driver: webdriver.Chrome):
         nav = driver.find_element(
             By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        li = random.choice(lis)
-        # li = lis[5]
+        # li = random.choice(lis)
+        li = lis[0]
     except NoSuchElementException:
         pass
     return li
@@ -201,7 +201,6 @@ def rand_tap_more_but(action: ActionChains, but_more: WebElement, driver: webdri
         time.sleep(time_delay)
         move_touch(action, driver, but_more)
         time.sleep(time_delay)
-        # driver.save_screenshot("screenshots/screenshot_08.png")
         but_more = get_but_more(driver)
         i += 1
 
@@ -422,11 +421,9 @@ def check_dialog_class(driver: webdriver.Chrome, mode: str):
         iframe = driver.find_element(
             By.XPATH, "//div[@id='everystraus_add_blur']")
         if iframe.get_attribute("style") == "display: block;":
-            # time.sleep(1)
             but_x = get_x_but(driver)
             if mode == 'PC':
                 action = ActionChains(driver)
-                # action.scroll_to_element(but_x).pause(time_mls).perform()
                 move_to_element(driver, but_x)
                 time.sleep(time_mls)
                 action.click(but_x).perform()
