@@ -24,19 +24,23 @@ from navigation import get_but_more
 from navigation import get_cads_links
 from navigation import get_element_by_href
 from navigation import get_count_img
+from navigation import get_main_but_mob
 from navigation import get_min_max_top
 from navigation import get_pictures
 from navigation import get_pictures_progres
+from navigation import get_read_docs
 from navigation import get_slideshow_but
 from navigation import get_slideshow_close
+# from navigation import move
 from navigation import move_touch
 from navigation import move_to_element
-from navigation import rand_tap_more_but
+from navigation import rand_tap_but_more
 from navigation import random_func_main
 from navigation import scroll_down_screen
 from navigation import scroll_move_click_pc
 from navigation import select_by_ref_mob
 from navigation import select_by_ref_pc
+from navigation import touch
 from selen import get_coordinates
 from selen import get_selenium_driver
 from utils import get_target_locations
@@ -89,11 +93,12 @@ def start_selen(mode: str):
                     secure.log.write_log('sub mode', 'Скидки и Акции')
                     scroll_move_click_pc(action, driver, li)
                     time.sleep(time_delay)
-                    el = get_element_by_href(driver, "/agreement")
+                    el = get_read_docs(driver)
                     scroll_move_click_pc(action, driver, el)
                     time.sleep(time_delay)
-                    el = get_element_by_href(driver, "/agreement")
-                    scroll_move_click_pc(action, driver, el)
+                    height_end_page = driver.execute_script(
+                        "return document.body.scrollHeight")
+                    scroll_down_screen(action, driver, height_end_page)
                     time.sleep(time_delay)
                 elif hrer_name == 'Новости':
                     print("sub mode - Новости")
@@ -136,6 +141,8 @@ def start_selen(mode: str):
                     if hrefs.__sizeof__() > 0:
                         scenario_building(action, driver, hrefs)
             else:
+                print("sub mode - main")
+                secure.log.write_log('sub mode', 'main')
                 time.sleep(time_delay)
                 hrefs = get_cads_links(driver)
                 if hrefs.__sizeof__() > 0:
@@ -145,72 +152,92 @@ def start_selen(mode: str):
             secure.log.write_log('mode', 'mobile')
             touch_input = PointerInput(POINTER_TOUCH, "touch")
             action = ActionBuilder(driver, mouse=touch_input)
-
-            li = select_by_ref_mob(action, driver)
-            teg_a = li.find_element(By.TAG_NAME, 'a')
-            hrer_name = teg_a.text
-            if hrer_name == 'Все новостройки':
-                print("sub mode - Все новостройки")
-                secure.log.write_log('sub mode', 'Все новостройки')
-                move_touch(action, driver, li)
-                scenario_all_buildings_mob(action, driver)
-            elif hrer_name == 'Скидки и Акции':
-                print("sub mode - Скидки и Акции")
-                secure.log.write_log('sub mode', 'Скидки и Акции')
-                move_touch(action, driver, li)
+            # Вероятность выбора равна 90%
+            if random.random() < 0.9:
+                nav_btn = get_main_but_mob(driver)
+                touch(action, nav_btn)
                 time.sleep(time_delay)
-            elif hrer_name == 'Рейтинг новостроек':
-                print("sub mode - Рейтинг новостроек")
-                secure.log.write_log('sub mode', 'Рейтинг новостроек')
-                move_touch(action, driver, li)
-                time.sleep(time_delay)
-                top = get_min_max_top(driver)
-                move_touch(action, driver, top)
-                hrefs = get_cads_links(driver)
-                if hrefs.__sizeof__() > 0:
-                    scenario_building_mob(action, driver, hrefs)
-            elif hrer_name == 'Новости рынка':
-                print("sub mode - Новости рынка")
-                secure.log.write_log('sub mode', 'Новости рынка')
-                move_touch(action, driver, li)
-                time.sleep(time_delay)
-                but_more = get_but_more(driver)
-                if but_more is None:
+                li = select_by_ref_mob(driver)
+                teg_a = li.find_element(By.TAG_NAME, 'a')
+                hrer_name = teg_a.text
+                if hrer_name == 'Все новостройки':
+                    print("sub mode - Все новостройки")
+                    secure.log.write_log('sub mode', 'Все новостройки')
+                    touch(action, li)
+                    time.sleep(time_delay)
+                    scenario_all_buildings_mob(action, driver)
+                elif hrer_name == 'Скидки и Акции':
+                    print("sub mode - Скидки и Акции")
+                    secure.log.write_log('sub mode', 'Скидки и Акции')
+                    touch(action, li)
+                    time.sleep(time_delay)
+                    el = get_read_docs(driver)
+                    move_touch(action, el)
+                    height_end_page = driver.execute_script(
+                        "return document.body.scrollHeight")
+                    # Функция листать мобильный экран
+                    time.sleep(time_delay)
+                elif hrer_name == 'Рейтинг новостроек':
+                    print("sub mode - Рейтинг новостроек")
+                    secure.log.write_log('sub mode', 'Рейтинг новостроек')
+                    touch(action, li)
+                    time.sleep(time_delay)
+                    top = get_min_max_top(driver)
+                    touch(action, top)
+                    hrefs = get_cads_links(driver)
+                    if hrefs.__sizeof__() > 0:
+                        scenario_building_mob(action, driver, hrefs)
+                elif hrer_name == 'Новости рынка':
+                    print("sub mode - Новости рынка")
+                    secure.log.write_log('sub mode', 'Новости рынка')
+                    touch(action, li)
+                    time.sleep(time_delay)
+                    but_more = get_but_more(driver)
+                    rand_tap_but_more(action, but_more, driver)
                     hrefs = get_cads_links(driver)
                     if hrefs.__sizeof__() > 0:
                         read_news_mob(action, driver, hrefs)
-                else:
-                    rand_tap_more_but(action, but_more, driver)
+                elif hrer_name == 'ТОП-30 застройщиков':
+                    print("sub mode - ТОП-30 застройщиков")
+                    secure.log.write_log('sub mode', 'ТОП-30 застройщиков')
+                    touch(action, li)
+                    time.sleep(time_delay)
+                    change_developer(action, driver)
+                    time.sleep(time_delay)
                     hrefs = get_cads_links(driver)
                     if hrefs.__sizeof__() > 0:
-                        read_news_mob(action, driver, hrefs)
-            elif hrer_name == 'ТОП-30 застройщиков':
-                print("sub mode - ТОП-30 застройщиков")
-                secure.log.write_log('sub mode', 'ТОП-30 застройщиков')
-                move_touch(action, driver, li)
-                time.sleep(time_delay)
-                change_developer(action, driver)
+                        scenario_building_mob(action, driver, hrefs)
+                elif hrer_name == 'Все застройщики':
+                    print("sub mode - Все застройщики")
+                    secure.log.write_log('sub mode', 'Все застройщики')
+                    touch(action, li)
+                    time.sleep(time_delay)
+                    but_more = get_but_more(driver)
+                    rand_tap_but_more(action, but_more, driver)
+                    change_developer(action, driver)
+                    time.sleep(time_delay)
+                    hrefs = get_cads_links(driver)
+                    if hrefs.__sizeof__() > 0:
+                        scenario_building_mob(action, driver, hrefs)
+                elif hrer_name == 'Новостройки Москвы':
+                    print("sub mode - Новостройки Москвы")
+                    secure.log.write_log('sub mode', 'Новостройки Москвы')
+                    time.sleep(time_delay)
+                    touch(action, nav_btn)
+                    time.sleep(time_delay)
+                    el = get_read_docs(driver)
+                    move_touch(action, el)
+                    height_end_page = driver.execute_script(
+                        "return document.body.scrollHeight")
+                    # Функция листать мобильный экран
+                    time.sleep(time_delay)
+            else:
+                print("sub mode - main")
+                secure.log.write_log('sub mode', 'main')
                 time.sleep(time_delay)
                 hrefs = get_cads_links(driver)
                 if hrefs.__sizeof__() > 0:
                     scenario_building_mob(action, driver, hrefs)
-            elif hrer_name == 'Все застройщики':
-                print("sub mode - Все застройщики")
-                secure.log.write_log('sub mode', 'Все застройщики')
-                move_touch(action, driver, li)
-                time.sleep(time_delay)
-                but_more = get_but_more(driver)
-                rand_tap_more_but(action, but_more, driver)
-                change_developer(action, driver)
-                time.sleep(time_delay)
-                hrefs = get_cads_links(driver)
-                if hrefs.__sizeof__() > 0:
-                    scenario_building_mob(action, driver, hrefs)
-            elif hrer_name == 'Новостройки Москвы':
-                print("sub mode - Новостройки Москвы")
-                secure.log.write_log('sub mode', 'Новостройки Москвы')
-                time.sleep(time_delay)
-
     except InvalidArgumentException as ex:
         secure.log.write_log('InvalidArgumentException', ex)
         print(ex)
@@ -261,7 +288,7 @@ def scenario_all_buildings(action, driver):
         if hrefs.__sizeof__() > 0:
             scenario_building(action, driver, hrefs)
         else:
-            el = get_element_by_href(driver, "/agreement")
+            el = get_read_docs(driver)
             scroll_move_click_pc(action, driver, el)
             time.sleep(time_delay)
             height_end_page = driver.execute_script(
@@ -279,7 +306,7 @@ def scenario_all_buildings(action, driver):
             scenario_building(action, driver, hrefs)
 
 
-def read_news_pc(action: ActionChains, driver, hrefs: str):
+def read_news_pc(action: ActionChains, driver, hrefs: list):
     href = random.choice(hrefs)
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
@@ -290,7 +317,7 @@ def read_news_pc(action: ActionChains, driver, hrefs: str):
     scroll_down_screen(action, driver, height_end_page)
 
 
-def scenario_building(action: ActionChains, driver, hrefs: str):
+def scenario_building(action: ActionChains, driver, hrefs: list):
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
@@ -302,7 +329,7 @@ def scenario_building(action: ActionChains, driver, hrefs: str):
     if progres:
         apartment_scene(action, driver, progres)
     else:
-        el = get_element_by_href(driver, "/agreement")
+        el = get_read_docs(driver)
         scroll_move_click_pc(action, driver, el)
         time.sleep(time_delay)
         height_end_page = driver.execute_script(
@@ -311,8 +338,8 @@ def scenario_building(action: ActionChains, driver, hrefs: str):
         time.sleep(time_delay)
 
 
-def apartment_scene(action, driver, element):
-    scroll_move_click_pc(action, driver, element)
+def apartment_scene(action: ActionChains, driver, el):
+    scroll_move_click_pc(action, driver, el)
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
     scroll_move_click_pc(action, driver, slide_show)
@@ -336,17 +363,18 @@ def apartment_scene(action, driver, element):
     # time.sleep(time_delay)
 
 
-def scenario_all_buildings_mob(action, driver):
+def scenario_all_buildings_mob(action: ActionBuilder, driver):
     refs = random_func_main(driver)
     link = str(random.choice(refs))
     href = link.split('/')[-1]
     main_el_select = href.split('-')[0]
     but_main_el_select = get_but_main_el_select(driver, main_el_select)
-    move_touch(action, driver, but_main_el_select)
+    # Как делать скроллинг экрана???
+    # move(action)
+    touch(action, but_main_el_select)
     time.sleep(time_delay)
     main_element = get_element_by_href(driver, href)
-    time.sleep(time_delay)
-    move_touch(action, driver, main_element)
+    touch(action, main_element)
     time.sleep(time_delay)
     but_more = get_but_more(driver)
     if but_more is None:
@@ -354,13 +382,17 @@ def scenario_all_buildings_mob(action, driver):
         if hrefs.__sizeof__() > 0:
             scenario_building_mob(action, driver, hrefs)
         else:
-            el = get_element_by_href(driver, "/agreement")
-            move_touch(action, driver, el)
+            el = get_read_docs(driver)
+            touch(action, el)
+            time.sleep(time_delay)
+            height_end_page = driver.execute_script(
+                "return document.body.scrollHeight")
+            # Функция листать мобильный экран
             time.sleep(time_delay)
     else:
         while but_more is not None:
             time.sleep(time_delay)
-            move_touch(action, driver, but_more)
+            move_touch(action, but_more)
             time.sleep(time_delay)
             but_more = get_but_more(driver)
         hrefs = get_cads_links(driver)
@@ -368,66 +400,71 @@ def scenario_all_buildings_mob(action, driver):
             scenario_building_mob(action, driver, hrefs)
 
 
-def scenario_building_mob(action, driver, hrefs):
+def scenario_building_mob(action: ActionBuilder, driver, hrefs: list):
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
-    move_touch(action, driver, el)
+    move_touch(action, el)
     time.sleep(time_delay)
     pictures = get_pictures(driver)
-    move_touch(action, driver, pictures)
+    apartment_scene_mob(action, driver, pictures)
+    progres = get_pictures_progres(driver)
+    if progres:
+        apartment_scene_mob(action, driver, progres)
+    else:
+        el = get_read_docs(driver)
+        move_touch(action, el)
+        time.sleep(time_delay)
+        height_end_page = driver.execute_script(
+            "return document.body.scrollHeight")
+        # Функция листать мобильный экран
+        time.sleep(time_delay)
+
+
+def apartment_scene_mob(action: ActionBuilder, driver, el):
+    move_touch(action, el)
     time.sleep(time_delay)
     slide_show = get_slideshow_but(driver)
-    move_touch(action, driver, slide_show)
+    touch(action, slide_show)
     count_img = get_count_img(driver)
     time.sleep(count_img*time_see_pict)
     slideshow_close = get_slideshow_close(driver)
-    move_touch(action, driver, slideshow_close)
-    time.sleep(time_delay)
-    apartment_scenario_mob(action, driver)
-
-
-def apartment_scenario_mob(action, driver):
-    time.sleep(time_delay)
-    section_house = driver.find_element(
-        By.XPATH, "//section[contains(@class, 'section-house')]")
-    time.sleep(time_delay)
-    elements = section_house.find_elements(
-        By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
-    el = random.choice(elements)
-    move_touch(action, driver, el)
-    plan = el.find_elements(
-        By.XPATH, "//div[contains(@class, 'price-grid__plan')]")
-    time.sleep(time_delay)
-    move_touch(action, driver, plan)
-    time.sleep(time_delay)
-    but_close = driver.find_element(
-        By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-    move_touch(action, driver, but_close)
+    touch(action, slideshow_close)
     time.sleep(time_delay)
 
 
-def read_news_mob(action, driver, hrefs):
+# def apartment_scenario_mob(action, driver):
+#     time.sleep(time_delay)
+#     section_house = driver.find_element(
+#         By.XPATH, "//section[contains(@class, 'section-house')]")
+#     time.sleep(time_delay)
+#     elements = section_house.find_elements(
+#         By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
+#     el = random.choice(elements)
+#     touch(action, el)
+#     plan = el.find_elements(
+#         By.XPATH, "//div[contains(@class, 'price-grid__plan')]")
+#     time.sleep(time_delay)
+#     move_touch(action, driver, plan)
+#     time.sleep(time_delay)
+#     but_close = driver.find_element(
+#         By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
+#     move_touch(action, driver, but_close)
+#     time.sleep(time_delay)
+
+
+def read_news_mob(action: ActionBuilder, driver, hrefs: list):
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
-    move_touch(action, driver, el)
+    move_touch(action, el)
     time.sleep(time_delay)
-
-    el = get_element_by_href(driver, "/agreement")
-    delta_y = random.randint(-90, 90)
-    delta_x = random.randint(-90, 90)
-    delta_twist = random.randint(0, 90)
-    scrols = random.randrange(1, 5)
-    # НЕ ЛИСТАЕТ НОВОСТЬ, ПАДАЕТ С ОШИБКОЙ
-    for _ in range(0, scrols):
-        action.pointer_action \
-            .move_to(el) \
-            .pointer_down() \
-            .move_by(2, 2, tilt_x=delta_x, tilt_y=delta_y, twist=delta_twist) \
-            .pointer_up(0)
-        action.perform()
-        time.sleep(time_delay)
+    height_end_page = driver.execute_script(
+        "return document.body.scrollHeight")
+    # Функция листать мобильный экран
+    el = get_read_docs(driver)
+    move_touch(action, el)
+    time.sleep(time_delay)
 
 
 # url = 'https://www.novostroyki-spb.ru/'

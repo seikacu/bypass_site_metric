@@ -70,9 +70,7 @@ def get_selenium_driver(use_proxy, mode):
 
 
 mob_devices = [
-    'iPhone SE',
     'iPhone XR',
-    # 'iPhone 4',
     'iPhone 5',
     'iPhone 6',
     'iPhone 6 Plus',
@@ -105,22 +103,17 @@ mob_devices = [
     'Pixel 3',
     'Pixel 4',
     'Pixel 7',
-    # 'JioPhone 2',
     'Samsung Galaxy S8+',
     'Samsung Galaxy S20 Ultra',
     'iPad Mini',
     'iPad Air',
-    'iPad Pro',
     'Surface Pro 7',
     'Surface Duo',
-    # 'Galaxy Fold',
+    'Galaxy Fold',  # !
     'Samsung Galaxy A51/71',
-    'Nest Hub',
-    'Nest Hub Max',
     'Galaxy S5',
     'Pixel 2',
     'Pixel 2 XL',
-    'iPhone 5/SE',
     'iPhone 6/7/8',
     'iPhone 6/7/8 Plus',
     'iPhone X',

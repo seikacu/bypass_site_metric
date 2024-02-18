@@ -91,12 +91,26 @@ def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_en
     return end
 
 
-def move_touch(action: ActionChains, driver: webdriver.Chrome, el: WebElement):
+def move_touch(action: ActionChains, el: WebElement):
     action.pointer_action.move_to(el).pointer_down().move_by(2, 2)
     action.perform()
     time.sleep(time_mls)
-    # driver.save_screenshot("screenshots/screenshot_01.png")
     action.pointer_action.move_to(el).pointer_down().pointer_up()
+    action.perform()
+
+
+def touch(action: ActionBuilder, el: WebElement):
+    action.pointer_action\
+        .move_to(el)\
+        .pointer_down()\
+        .move_by(2, 2)\
+        .pointer_up()
+    action.perform()
+
+
+def move(action: ActionBuilder):
+    action.pointer_action.move_to_location(0, 800).pointer_down().move_by(
+        2, 2, tilt_x=-72, tilt_y=9, twist=86).pointer_up(1)
     action.perform()
 
 
@@ -113,18 +127,24 @@ def select_by_ref_pc(driver: webdriver.Chrome):
     return li
 
 
-def select_by_ref_mob(action: ActionChains, driver: webdriver.Chrome):
-    li = None
+def get_main_but_mob(driver: webdriver.Chrome):
+    nav_btn = None
     try:
         nav_btn = driver.find_element(
             By.XPATH, "//label[contains(@class, 'nav-btn__label')]")
-        move_touch(action, driver, nav_btn)
-        time.sleep(time_delay)
+    except NoSuchElementException:
+        pass
+    return nav_btn
+
+
+def select_by_ref_mob(driver: webdriver.Chrome):
+    li = None
+    try:
         nav = driver.find_element(
             By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        # li = random.choice(lis)
-        li = lis[0]
+        li = random.choice(lis)
+        # li = lis[1]
     except NoSuchElementException:
         pass
     return li
@@ -195,20 +215,23 @@ def get_min_max_top(driver: webdriver.Chrome):
     return parent
 
 
-def rand_tap_more_but(action: ActionChains, but_more: WebElement, driver: webdriver.Chrome):
+def rand_tap_but_more(action: ActionBuilder, but_more: WebElement, driver: webdriver.Chrome):
     scrols = random.randrange(1, 10)
     for i in range(0, scrols):
         time.sleep(time_delay)
-        move_touch(action, driver, but_more)
+        move_touch(action, but_more)
         time.sleep(time_delay)
         but_more = get_but_more(driver)
+        if but_more is None:
+            break
         i += 1
 
 
 def change_developer(action: ActionChains, driver: webdriver.Chrome):
     table = driver.find_elements(By.TAG_NAME, 'tr')
     developer = random.choice(table)
-    move_touch(action, driver, developer)
+    href = developer.find_element(By.TAG_NAME, 'a')
+    move_touch(action, href)
 
 
 def get_pictures(driver: webdriver.Chrome):
@@ -298,7 +321,7 @@ def get_click_but_more(action: ActionChains, driver: webdriver.Chrome):
     but_more = get_but_more(driver)
     if but_more is None:
         time.sleep(time_delay)
-        move_touch(action, driver, but_more)
+        move_touch(action, but_more)
         time.sleep(time_delay)
 
 
@@ -338,6 +361,17 @@ random_func_main = random.choice(func_main)
 news_mode = [
     get_cads_links,
 ]
+
+
+def get_read_docs(driver: webdriver.Chrome) -> WebElement:
+    el = None
+    hrefs = ["/agreement", "/privacy-policy"]
+    href = random.choice(hrefs)
+    try:
+        el = get_element_by_href(driver, href)
+    except NoSuchElementException:
+        pass
+    return el
 
 
 # Прокрутить колесо мыши до элемента

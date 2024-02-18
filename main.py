@@ -20,8 +20,8 @@ def main():
     secure.log.create_log()
     while True:
         time_start = datetime.datetime.now()
-        # start_selen(random.choice(mode))
-        start_selen('mobile')
+        start_selen(random.choice(mode))
+        # start_selen('mobile')
         # start_selen('PC')
         time_end = datetime.datetime.now()
         time_diff = time_end - time_start
