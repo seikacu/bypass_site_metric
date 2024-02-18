@@ -11,7 +11,7 @@ from selenium.webdriver.chrome.service import Service
 import secure
 
 
-def get_path_webdriver():
+def get_path_webdriver() -> str:
     if platform.system() == "Windows":
         return r".\web_driver\chromedriver.exe"
     elif platform.system() == "Linux":
@@ -71,7 +71,6 @@ def get_selenium_driver(use_proxy, mode):
 
 mob_devices = [
     'iPhone XR',
-    'iPhone 5',
     'iPhone 6',
     'iPhone 6 Plus',
     'iPhone 14 Pro Max',
@@ -98,7 +97,6 @@ mob_devices = [
     'Nexus 6P',
     'Nexus 7',
     'Nexus 10',
-    'Nokia Lumia 520',
     'Nokia N9',
     'Pixel 3',
     'Pixel 4',
@@ -107,9 +105,7 @@ mob_devices = [
     'Samsung Galaxy S20 Ultra',
     'iPad Mini',
     'iPad Air',
-    'Surface Pro 7',
     'Surface Duo',
-    'Galaxy Fold',  # !
     'Samsung Galaxy A51/71',
     'Galaxy S5',
     'Pixel 2',

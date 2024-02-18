@@ -1,5 +1,6 @@
 import random
 import time
+import traceback
 
 import numpy as np
 import scipy.interpolate as si
@@ -50,7 +51,7 @@ def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: Web
         time.sleep(time_mls)
         action.click(el).perform()
     else:
-        while offset < delta_y + 200:
+        while offset < delta_y:  # + 200
             count = 0
             if delta_y > 0 and delta_y >= 100:
                 count = random.randrange(0, 100)
@@ -70,12 +71,11 @@ def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: Web
         action.click(el).perform()
 
 
-def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_end_page: int) -> bool:
+def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_end_page: int):
     time.sleep(time_read_news)
     offset = int(driver.get_window_size()['height'])
     stop = random.randint(5, 10)
     start = 0
-    end = False
     while offset <= height_end_page:
         if start == stop:
             start = 0
@@ -87,8 +87,6 @@ def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_en
         start += 1
     if offset >= height_end_page:
         time.sleep(time_read_news)
-        end = True
-    return end
 
 
 def move_touch(action: ActionChains, el: WebElement):
@@ -114,7 +112,7 @@ def move(action: ActionBuilder):
     action.perform()
 
 
-def select_by_ref_pc(driver: webdriver.Chrome):
+def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
     li = None
     try:
         nav = driver.find_element(
@@ -123,21 +121,21 @@ def select_by_ref_pc(driver: webdriver.Chrome):
         li = random.choice(lis)
         # li = lis[4]
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return li
 
 
-def get_main_but_mob(driver: webdriver.Chrome):
+def get_main_but_mob(driver: webdriver.Chrome) -> WebElement:
     nav_btn = None
     try:
         nav_btn = driver.find_element(
             By.XPATH, "//label[contains(@class, 'nav-btn__label')]")
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return nav_btn
 
 
-def select_by_ref_mob(driver: webdriver.Chrome):
+def select_by_ref_mob(driver: webdriver.Chrome) -> WebElement:
     li = None
     try:
         nav = driver.find_element(
@@ -146,61 +144,61 @@ def select_by_ref_mob(driver: webdriver.Chrome):
         li = random.choice(lis)
         # li = lis[1]
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return li
 
 
 # Строка поиска новостроек
-def get_find_box(driver: webdriver.Chrome):
+def get_find_box(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, "//input[@placeholder='Поиск новостроек']")
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
 # Кнопка найти новостройки
-def get_but_find(driver: webdriver.Chrome):
+def get_but_find(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, "//button[contains(text(), 'Найти')]")
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
 # Кнопка "Найти еще" / "Показать еще"
-def get_but_more(driver: webdriver.Chrome):
+def get_but_more(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(By.XPATH, "//button[@id='loadmore']")
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
 # Кнопка закрыть всплывающее окно
-def get_x_but(driver: webdriver.Chrome):
+def get_x_but(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, "//a[@id='everystraus_callback_close']")
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
 # Кнопка позвонить
-def get_call_but(driver: webdriver.Chrome):
+def get_call_but(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, "//div[@id='everystraus_callback_phone']")
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
@@ -208,7 +206,7 @@ def scroll_down_yoffset(driver: webdriver.Chrome, element: WebElement, y: int):
     ActionChains(driver).move_to_element_with_offset(element, 0, y).perform()
 
 
-def get_min_max_top(driver: webdriver.Chrome):
+def get_min_max_top(driver: webdriver.Chrome) -> WebElement:
     punkts = driver.find_elements(By.XPATH, "//div[contains(@class, 'punkt')]")
     punkt = random.choice(punkts)
     parent = punkt.find_element(By.XPATH, "..")
@@ -234,13 +232,13 @@ def change_developer(action: ActionChains, driver: webdriver.Chrome):
     move_touch(action, href)
 
 
-def get_pictures(driver: webdriver.Chrome):
+def get_pictures(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, '//div[contains(@class, "carousel__slide is-selected")]')
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
@@ -254,32 +252,32 @@ def get_pictures_progres(driver: webdriver.Chrome):
         elif len(els) == 2:
             return els[1]
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
 
 
 # Кнопка запустить слайдшоу
-def get_slideshow_but(driver: webdriver.Chrome):
+def get_slideshow_but(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, '//button[contains(@class, "button--slideshow")]')
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
-def get_slideshow_close(driver: webdriver.Chrome):
+def get_slideshow_close(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
         el = driver.find_element(
             By.XPATH, '//button[contains(@class, "fancybox__button--close")]')
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
 # РАЗДЕЛ - Все новостройки СПб
-def get_hrefs_zhk(driver: webdriver.Chrome):
+def get_hrefs_zhk(driver: webdriver.Chrome) -> list:
     links = []
     hrefs = driver.find_elements(By.XPATH, "//a[contains(@href,'/zhk-')]")
     for href in hrefs:
@@ -288,7 +286,7 @@ def get_hrefs_zhk(driver: webdriver.Chrome):
 
 
 # РАЗДЕЛ - Новостройки по районам
-def get_hrefs_novostrojki(driver: webdriver.Chrome):
+def get_hrefs_novostrojki(driver: webdriver.Chrome) -> list:
     links = []
     hrefs = driver.find_elements(
         By.XPATH, "//a[contains(@href,'/novostrojki-')]")
@@ -298,7 +296,7 @@ def get_hrefs_novostrojki(driver: webdriver.Chrome):
 
 
 # РАЗДЕЛ - Новостройки у метро
-def get_hrefs_metro(driver: webdriver.Chrome):
+def get_hrefs_metro(driver: webdriver.Chrome) -> list:
     links = []
     hrefs = driver.find_elements(By.XPATH, "//a[contains(@href,'/metro-')]")
     for href in hrefs:
@@ -326,17 +324,17 @@ def get_click_but_more(action: ActionChains, driver: webdriver.Chrome):
 
 
 # Получить элемент для перехода по ссылке
-def get_element_by_href(driver: webdriver, href: str):
+def get_element_by_href(driver: webdriver, href: str) -> WebElement:
     return driver.find_element(By.XPATH, f"//a[contains(@href,'{href}')]")
 
 
-def get_count_img(driver: webdriver.Chrome):
+def get_count_img(driver: webdriver.Chrome) -> int:
     img_count = driver.find_element(By.XPATH, "//span[@data-fancybox-count]")
     return int(img_count.text)
 
 
 # Развернуть список главного элемента
-def get_but_main_el_select(driver: webdriver, el: str):
+def get_but_main_el_select(driver: webdriver, el: str) -> WebElement:
     links_btns = driver.find_elements(
         By.XPATH, "//span[contains(@class,'links__btn')]")
     if el == 'metro':
@@ -370,7 +368,7 @@ def get_read_docs(driver: webdriver.Chrome) -> WebElement:
     try:
         el = get_element_by_href(driver, href)
     except NoSuchElementException:
-        pass
+        secure.log.write_log('traceback', traceback.format_exc())
     return el
 
 
@@ -380,7 +378,7 @@ def move_to_element(driver: webdriver, el: WebElement):
 
 
 # Получить координаты элемента
-def get_el_location(el: WebElement):
+def get_el_location(el: WebElement) -> dict:
     return el.location
 
 
@@ -476,7 +474,7 @@ def check_dialog_class(driver: webdriver.Chrome, mode: str):
         pass
 
 
-def interpolate_move():
+def interpolate_move() -> list:
     # Curve base:
     points = [[0, 0], [0, 2], [2, 3], [4, 0], [6, 3], [8, 2], [8, 0]]
     points = np.array(points)
@@ -515,7 +513,7 @@ def move_mouse(action: ActionChains):
         secure.log.write_log('move_mouse', f'{mouse_x}, {mouse_y}')
 
 
-def properties(element):
+def properties(element) -> dict:
     kv = element.text.split(' ', 1)[1].split(', ')
     return {x[0]: x[1] for x in list(map(lambda item: item.split(': '), kv))}
 

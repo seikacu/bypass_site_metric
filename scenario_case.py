@@ -1,5 +1,6 @@
 import random
 import threading
+import traceback
 import time
 
 from selenium.common.exceptions import ElementNotInteractableException
@@ -240,27 +241,35 @@ def start_selen(mode: str):
                     scenario_building_mob(action, driver, hrefs)
     except InvalidArgumentException as ex:
         secure.log.write_log('InvalidArgumentException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except InvalidSelectorException as ex:
         secure.log.write_log('InvalidSelectorException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except ElementNotInteractableException as ex:
         secure.log.write_log('ElementNotInteractableException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except UnknownMethodException as ex:
         secure.log.write_log('UnknownMethodException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except NoSuchDriverException as ex:
         secure.log.write_log('NoSuchDriverException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except NoSuchElementException as ex:
         secure.log.write_log('NoSuchElementException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except WebDriverException as ex:
         secure.log.write_log('WebDriverException', ex)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(ex)
     except Exception as e:
         secure.log.write_log('Exception', e)
+        secure.log.write_log('traceback', traceback.format_exc())
         print(e)
     finally:
         if driver:
@@ -374,7 +383,7 @@ def scenario_all_buildings_mob(action: ActionBuilder, driver):
     touch(action, but_main_el_select)
     time.sleep(time_delay)
     main_element = get_element_by_href(driver, href)
-    touch(action, main_element)
+    move_touch(action, main_element)
     time.sleep(time_delay)
     but_more = get_but_more(driver)
     if but_more is None:
@@ -383,12 +392,12 @@ def scenario_all_buildings_mob(action: ActionBuilder, driver):
             scenario_building_mob(action, driver, hrefs)
         else:
             el = get_read_docs(driver)
-            touch(action, el)
+            move_touch(action, el)
             time.sleep(time_delay)
-            height_end_page = driver.execute_script(
-                "return document.body.scrollHeight")
+            # height_end_page = driver.execute_script(
+            #     "return document.body.scrollHeight")
             # Функция листать мобильный экран
-            time.sleep(time_delay)
+            # time.sleep(time_delay)
     else:
         while but_more is not None:
             time.sleep(time_delay)
@@ -415,10 +424,10 @@ def scenario_building_mob(action: ActionBuilder, driver, hrefs: list):
         el = get_read_docs(driver)
         move_touch(action, el)
         time.sleep(time_delay)
-        height_end_page = driver.execute_script(
-            "return document.body.scrollHeight")
+        # height_end_page = driver.execute_script(
+        #     "return document.body.scrollHeight")
         # Функция листать мобильный экран
-        time.sleep(time_delay)
+        # time.sleep(time_delay)
 
 
 def apartment_scene_mob(action: ActionBuilder, driver, el):
@@ -459,8 +468,8 @@ def read_news_mob(action: ActionBuilder, driver, hrefs: list):
     el = get_element_by_href(driver, href)
     move_touch(action, el)
     time.sleep(time_delay)
-    height_end_page = driver.execute_script(
-        "return document.body.scrollHeight")
+    # height_end_page = driver.execute_script(
+    #     "return document.body.scrollHeight")
     # Функция листать мобильный экран
     el = get_read_docs(driver)
     move_touch(action, el)

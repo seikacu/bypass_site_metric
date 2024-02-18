@@ -15,7 +15,7 @@ def read_json():
     return json.load(open('geo.json', encoding="utf-8"))
 
 
-def get_target_locations():
+def get_target_locations() -> str:
     geo = read_json()
     item = get_random_geo(geo, p_spb=0.5, p_moscow=0.3, p_other=0.2)
     city = item['city']

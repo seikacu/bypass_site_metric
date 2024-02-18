@@ -80,7 +80,7 @@ class Proxy:
         self.PROXY_PASS = PROXY_PASS
 
 
-def get_proxy_list(file_name):
+def get_proxy_list(file_name) -> list:
     proxy_list = []
     with open(file_name, encoding="utf-8") as f:
         for line in f:
