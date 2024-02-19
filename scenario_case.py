@@ -109,6 +109,8 @@ def start_selen(mode: str):
                     but_more = get_but_more(driver)
                     scrols = random.randrange(1, 10)
                     for i in range(0, scrols):
+                        if but_more is None:
+                            break
                         scroll_move_click_pc(action, driver, but_more)
                         but_more = get_but_more(driver)
                         time.sleep(time_delay)
@@ -305,11 +307,14 @@ def scenario_all_buildings(action, driver):
             scroll_down_screen(action, driver, height_end_page)
             time.sleep(time_delay)
     else:
-        while but_more is not None:
-            time.sleep(time_delay)
+        scrols = random.randrange(1, 10)
+        for i in range(0, scrols):
+            if but_more is None:
+                break
             scroll_move_click_pc(action, driver, but_more)
             time.sleep(time_delay)
             but_more = get_but_more(driver)
+            i += 1
         hrefs = get_cads_links(driver)
         if hrefs.__sizeof__() > 0:
             scenario_building(action, driver, hrefs)
@@ -399,11 +404,15 @@ def scenario_all_buildings_mob(action: ActionBuilder, driver):
             # Функция листать мобильный экран
             # time.sleep(time_delay)
     else:
-        while but_more is not None:
+        scrols = random.randrange(1, 10)
+        for i in range(0, scrols):
+            if but_more is None:
+                break
             time.sleep(time_delay)
             move_touch(action, but_more)
             time.sleep(time_delay)
             but_more = get_but_more(driver)
+            i += 1
         hrefs = get_cads_links(driver)
         if hrefs.__sizeof__() > 0:
             scenario_building_mob(action, driver, hrefs)

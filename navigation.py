@@ -119,7 +119,7 @@ def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
             By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
         li = random.choice(lis)
-        # li = lis[4]
+        # li = lis[0]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li
@@ -142,7 +142,7 @@ def select_by_ref_mob(driver: webdriver.Chrome) -> WebElement:
             By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
         li = random.choice(lis)
-        # li = lis[1]
+        # li = lis[0]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li
@@ -216,12 +216,12 @@ def get_min_max_top(driver: webdriver.Chrome) -> WebElement:
 def rand_tap_but_more(action: ActionBuilder, but_more: WebElement, driver: webdriver.Chrome):
     scrols = random.randrange(1, 10)
     for i in range(0, scrols):
+        if but_more is None:
+            break
         time.sleep(time_delay)
         move_touch(action, but_more)
         time.sleep(time_delay)
         but_more = get_but_more(driver)
-        if but_more is None:
-            break
         i += 1
 
 
@@ -317,7 +317,7 @@ def get_cads_links(driver: webdriver.Chrome) -> list:
 
 def get_click_but_more(action: ActionChains, driver: webdriver.Chrome):
     but_more = get_but_more(driver)
-    if but_more is None:
+    if but_more is not None:
         time.sleep(time_delay)
         move_touch(action, but_more)
         time.sleep(time_delay)

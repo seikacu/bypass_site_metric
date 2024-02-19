@@ -1,5 +1,6 @@
 import datetime
 import random
+# import threading
 import time
 
 import secure
@@ -21,6 +22,7 @@ def main():
     while True:
         time_start = datetime.datetime.now()
         start_selen(random.choice(mode))
+        # t.start()
         # start_selen('mobile')
         # start_selen('PC')
         time_end = datetime.datetime.now()
@@ -32,6 +34,8 @@ def main():
         time.sleep(time_delay)
     # print('END')
 
+
+# t = threading.Thread(target=start_selen(random.choice(mode)))
 
 if __name__ == '__main__':
     main()
