@@ -5,7 +5,7 @@ import traceback
 import numpy as np
 import scipy.interpolate as si
 
-from numpy.random import choice
+# from numpy.random import choice
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains, Keys
@@ -15,9 +15,22 @@ from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
+from check_visible import is_visible
+# from move_mouse import mouse_click
+from move_mouse import mouse_move_to_element
+from scrolling_ import scroll
+from utils import get_location_characteristics
+from utils import get_window_characteristics
+# from utils import mouse as my_mouse
+
+# get_scroll_height,
+
 import secure
 
-mls = [
+TIME_SLEEP = 0
+MAX_STEP = 20
+
+mls_01_1 = [
     0.1,
     0.2,
     0.3,
@@ -30,45 +43,115 @@ mls = [
     1.0
 ]
 
-time_read_news = random.randrange(30, 45)
-time_delay = random.randrange(1, 5)
+
+mls = [
+    0.2,
+    0.4,
+    0.6,
+    0.8,
+    1.0
+]
+
+
+mls_05 = [
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5
+]
+
+
+mls_06_1 = [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0
+]
+
+
+# time_read_news = random.randrange(30, 45)
+time_read_news = random.randrange(15, 30)
+time_delay = random.randrange(3, 7)
 time_mls = random.choice(mls)
+time_mls_05 = random.choice(mls_05)
+time_mls_06_1 = random.choice(mls_06_1)
 
 
-def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement):
-    offset = int(driver.get_window_size()['height'])
-    page_y_offset = driver.execute_script('return window.pageYOffset;')
-    offset += page_y_offset
-    delta_y = int(el.rect['y'])
-    if delta_y < page_y_offset:
-        while delta_y < page_y_offset:
-            count = random.randrange(-100, 0)
-            action.scroll_by_amount(0, count).perform()
-            time.sleep(time_mls)
-            page_y_offset += count
-        time.sleep(time_delay)
-        move_to_element(driver, el)
-        time.sleep(time_mls)
-        action.click(el).perform()
-    else:
-        while offset < delta_y:  # + 200
-            count = 0
-            if delta_y > 0 and delta_y >= 100:
-                count = random.randrange(0, 100)
-            elif delta_y < 0 and delta_y <= -100:
-                count = random.randrange(-100, 0)
-            elif 0 < delta_y < 100:
-                count = delta_y
-                move_mouse(action)
-            elif 0 > delta_y > -100:
-                count = delta_y
-            action.scroll_by_amount(0, count).perform()
-            time.sleep(time_mls)
-            offset += count
-        time.sleep(time_delay)
-        move_to_element(driver, el)
-        time.sleep(time_mls)
-        action.click(el).perform()
+def scroll_move_click_pc_2(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
+    while not is_visible(driver, el):
+        STEP = random.randint(10, MAX_STEP)
+        elem_top_bound, elem_lower_bound = get_location_characteristics(el)
+        win_upper_bound, win_lower_bound = get_window_characteristics(driver)
+        while elem_lower_bound - 250 < win_upper_bound:
+            elem_top_bound, elem_lower_bound = get_location_characteristics(el)
+            win_upper_bound, win_lower_bound = get_window_characteristics(
+                driver)
+            elem_top_bound, elem_lower_bound = get_location_characteristics(el)
+            scroll(driver, -STEP)
+            time.sleep(TIME_SLEEP)
+        # else:
+        #     scroll(driver, -STEP)
+        while elem_top_bound + 250 > win_lower_bound:
+            # page_y_offset = driver.execute_script('return window.pageYOffset;')
+            elem_top_bound, elem_lower_bound = get_location_characteristics(el)
+            win_upper_bound, win_lower_bound = get_window_characteristics(
+                driver)
+            scroll(driver, STEP)
+            time.sleep(TIME_SLEEP)
+        # else:
+        #     scroll(driver, STEP)
+        # clas = el.get_attribute("class")
+        # if clas == "carousel__slide is-selected":
+        #     break
+    mouse_move_to_element(action, driver, mouse, el)
+    action.move_to_element(el)
+    time.sleep(time_mls_06_1)
+    action.move_to_element(el).click().perform()
+    # mouse_click(action)
+
+
+# def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
+#     offset = int(driver.get_window_size()['height'])
+#     page_y_offset = driver.execute_script('return window.pageYOffset;')
+#     offset += page_y_offset
+#     delta_y = int(el.rect['y'])
+#     win_upper_bound, win_lower_bound = get_window_characteristics(driver)
+#     if delta_y < page_y_offset:
+#         while delta_y < page_y_offset:
+#             count = random.randrange(-100, 0)
+#             action.scroll_by_amount(0, count).perform()
+#             time.sleep(time_mls)
+#             page_y_offset += count
+#         time.sleep(time_delay)
+
+#         mouse_move_to_element(driver, mouse, el)
+#         # move_mouse(driver, el)
+#         # move_to_element(driver, el)
+#         time.sleep(time_mls)
+#         action.click(el).perform()
+#     else:
+#         while offset < delta_y + 200:
+#             count = 0
+#             if delta_y > 0 and delta_y >= 100:
+#                 count = random.randrange(0, 100)
+#             elif delta_y < 0 and delta_y <= -100:
+#                 count = random.randrange(-100, 0)
+#             elif 0 < delta_y < 100:
+#                 count = delta_y
+#             elif 0 > delta_y > -100:
+#                 count = delta_y
+#             action.scroll_by_amount(0, count).perform()
+#             time.sleep(time_mls)
+#             offset += count
+#         time.sleep(time_delay)
+#         mouse_move_to_element(driver, mouse, el)
+#         # move_mouse(action, el)
+#         # move_to_element(driver, el)
+#         time.sleep(time_mls)
+#         action.click(el).perform()
 
 
 def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_end_page: int):
@@ -119,7 +202,7 @@ def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
             By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
         li = random.choice(lis)
-        # li = lis[0]
+        # li = lis[4]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li
@@ -235,8 +318,14 @@ def change_developer(action: ActionChains, driver: webdriver.Chrome):
 def get_pictures(driver: webdriver.Chrome) -> WebElement:
     el = None
     try:
-        el = driver.find_element(
-            By.XPATH, '//div[contains(@class, "carousel__slide is-selected")]')
+        try:
+            el = driver.find_element(
+                By.XPATH, '//div[contains(@class, "thumb-gallery__fullscreen gallery__fullscreen_new_top")]')
+        except NoSuchElementException:
+            pass
+        if el is None:
+            el = driver.find_element(
+                By.XPATH, '//div[contains(@class, "carousel__slide is-selected")]')
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return el
@@ -245,8 +334,14 @@ def get_pictures(driver: webdriver.Chrome) -> WebElement:
 def get_pictures_progres(driver: webdriver.Chrome):
     el = None
     try:
-        els = driver.find_elements(
-            By.XPATH, '//div[contains(@class, "carousel__slide is-selected")]')
+        try:
+            els = driver.find_elements(
+                By.XPATH, '//div[contains(@class, "thumb-gallery__fullscreen gallery__fullscreen_new")]')
+        except NoSuchElementException:
+            pass
+        if els is None:
+            els = driver.find_elements(
+                By.XPATH, '//div[contains(@class, "carousel__slide is-selected")]')
         if len(els) < 2:
             return el
         elif len(els) == 2:
@@ -338,12 +433,16 @@ def get_but_main_el_select(driver: webdriver, el: str) -> WebElement:
     links_btns = driver.find_elements(
         By.XPATH, "//span[contains(@class,'links__btn')]")
     if el == 'metro':
+        print("Метро")
         return links_btns[0]
     elif el == 'novostrojki':
+        print("Новостройки по районам")
         return links_btns[1]
     elif el == 'zhk':
+        print("Все новостройки СПб")
         return links_btns[2]
     else:
+        print("Портал о новостройках Санкт-Петербурга")
         return links_btns[3]
 
 
@@ -374,6 +473,7 @@ def get_read_docs(driver: webdriver.Chrome) -> WebElement:
 
 # Прокрутить колесо мыши до элемента
 def move_to_element(driver: webdriver, el: WebElement):
+    # ActionChains(driver).w3c_actions.pointer_action.move_to_location(100, 100)
     ActionChains(driver).move_to_element(el).pause(time_mls).perform()
 
 
@@ -382,19 +482,10 @@ def get_el_location(el: WebElement) -> dict:
     return el.location
 
 
-mls = [
-    0.2,
-    0.4,
-    0.6,
-    0.8,
-    1.0
-]
-
-
-def scroll_down_page(driver: webdriver.Chrome, speed=100):
+def scroll_down_page(driver: webdriver.Chrome, speed=25):
     current_scroll_position, new_height = 0, 1
     while current_scroll_position <= new_height:
-        time.sleep(random.choice(mls))
+        # time.sleep(random.choice(mls))
         current_scroll_position += speed
         driver.execute_script(
             "window.scrollTo(0, {});".format(current_scroll_position))
@@ -411,15 +502,6 @@ def scroll_down_to_element(driver: webdriver.Chrome, y: int, speed=100):
         new_height = driver.execute_script("return document.body.scrollHeight")
         if new_height >= y:
             break
-
-
-mls_05 = [
-    0.1,
-    0.2,
-    0.3,
-    0.4,
-    0.5
-]
 
 
 def scrooll_down(actions):
@@ -448,7 +530,7 @@ def _in_viewport(driver: webdriver.Chrome, el: WebElement):
     return driver.execute_script(script, el)
 
 
-def check_dialog_class(driver: webdriver.Chrome, mode: str):
+def check_dialog_class(driver: webdriver.Chrome, mode: str, mouse):
     try:
         iframe = driver.find_element(
             By.XPATH, "//div[@id='everystraus_add_blur']")
@@ -456,8 +538,11 @@ def check_dialog_class(driver: webdriver.Chrome, mode: str):
             but_x = get_x_but(driver)
             if mode == 'PC':
                 action = ActionChains(driver)
-                move_to_element(driver, but_x)
-                time.sleep(time_mls)
+                # mouse = Mouse()
+                mouse_move_to_element(action, driver, mouse, but_x)
+                # move_mouse(driver, but_x)
+                # move_to_element(driver, but_x)
+                # time.sleep(time_mls)
                 action.click(but_x).perform()
             elif mode == 'mobile':
                 touch_input = PointerInput(POINTER_TOUCH, "touch")
@@ -501,13 +586,13 @@ def interpolate_move() -> list:
     return [x_i, y_i]
 
 
-def move_mouse(action: ActionChains):
+def move_mouse(action: ActionChains, el: WebElement):
     # First, go to your start point or Element:
     # action.move_to_element(start_element)
     # action.perform()
 
     for mouse_x, mouse_y in zip(interpolate_move()[0], interpolate_move()[1]):
-        action.move_by_offset(mouse_x, mouse_y)
+        action.move_to_element_with_offset(el, mouse_x, mouse_y)
         action.perform()
         print(mouse_x, mouse_y)
         secure.log.write_log('move_mouse', f'{mouse_x}, {mouse_y}')
@@ -518,38 +603,10 @@ def properties(element) -> dict:
     return {x[0]: x[1] for x in list(map(lambda item: item.split(': '), kv))}
 
 
-def random_movements(driver: webdriver.Chrome, mouse):
-    while True:
-        width = driver.execute_script(
-            'return document.documentElement.clientWidth')
-        height = driver.execute_script(
-            'return document.documentElement.clientHeight')
-        prob_y = mouse.y / width
-        prob_x = mouse.x / height
-        move_y = random.uniform(0., 15.) * \
-            choice([-1, 1], p=[prob_y, 1 - prob_y])
-        move_x = random.uniform(0., 15.) * \
-            choice([-1, 1], p=[prob_x, 1 - prob_x])
-        mouse.x += move_x
-        mouse.y += move_y
-        if all(((mouse.x + move_x * 10 < height),
-                (mouse.y + move_y * 10 < width),
-                (mouse.x + move_x * 10 > 0),
-                (mouse.y + move_y * 10 > 0))):
-            for _ in range(10):
-                mouse_move(driver, move_x, move_y)
-            break
-
-
-def mouse_move(driver, x, y):
-    action = ActionChains(driver)
-    action.move_by_offset(x, y).perform()
-
-
 # Функция для выполнения проверки в отдельном потоке
-def check_dialog_thread(stop: bool, driver: webdriver.Chrome, mode: str):
+def check_dialog_thread(stop: bool, driver: webdriver.Chrome, mode: str, mouse):
     while True:
-        check_dialog_class(driver, mode)
+        check_dialog_class(driver, mode, mouse)
         if stop():
             break
 

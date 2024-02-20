@@ -14,6 +14,7 @@ mode = [
 ]
 
 time_delay = random.randrange(10, 60)
+# time_delay = random.randrange(1, 5)
 
 
 def main():
