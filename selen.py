@@ -63,7 +63,7 @@ def get_selenium_driver(use_proxy, mode):
         service = Service(get_path_webdriver(), desired_capabilities=caps)
         driver = webdriver.Chrome(service=service, options=options)
         width = random.randint(900, 1920)
-        height = random.randint(950, 1400)
+        height = random.randint(900, 1400)
         driver.set_window_size(width, height)
 
     return driver

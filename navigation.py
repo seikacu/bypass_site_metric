@@ -24,6 +24,7 @@ import secure
 
 TIME_SLEEP = 0
 MAX_STEP = 20
+MAX_STEP2 = random.randint(30, 35)
 
 mls_01_1 = [
     0.1,
@@ -56,6 +57,13 @@ mls_05 = [
     0.5
 ]
 
+mls_03 = [
+    0.1,
+    0.2,
+    0.3
+]
+TIME_SLEEP2 = random.choice(mls_03)
+
 
 mls_06_1 = [
     0.5,
@@ -77,35 +85,53 @@ time_mls_06_1 = random.choice(mls_06_1)
 
 def scroll_move_click_pc_2(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
     while not is_visible(driver, el):
+        offset = 0
         STEP = random.randint(10, MAX_STEP)
         elem_top_bound, elem_lower_bound = get_location_characteristics(el)
-        win_upper_bound, win_lower_bound = get_window_characteristics(driver)
-        while elem_lower_bound - 300 < win_upper_bound:
+        win_upper_bound, win_lower_bound = get_window_characteristics(
+            driver)
+        while elem_lower_bound < win_upper_bound:
+            offset = -1
             elem_top_bound, elem_lower_bound = get_location_characteristics(el)
             win_upper_bound, win_lower_bound = get_window_characteristics(
                 driver)
             elem_top_bound, elem_lower_bound = get_location_characteristics(el)
             scroll(driver, -STEP)
             time.sleep(TIME_SLEEP)
-        # else:
-        #     scroll(driver, -STEP)
-        while elem_top_bound + 250 > win_lower_bound:
+            # else:
+            #     scroll(driver, -STEP)
+        while elem_top_bound > win_lower_bound:
+            offset = 1
             # page_y_offset = driver.execute_script('return window.pageYOffset;')
-            elem_top_bound, elem_lower_bound = get_location_characteristics(el)
+            elem_top_bound, elem_lower_bound = get_location_characteristics(
+                el)
             win_upper_bound, win_lower_bound = get_window_characteristics(
                 driver)
             scroll(driver, STEP)
             time.sleep(TIME_SLEEP)
-        # else:
-        #     scroll(driver, STEP)
-        # clas = el.get_attribute("class")
-        # if clas == "carousel__slide is-selected":
-        #     break
+            # else:
+            #     scroll(driver, STEP)
+            # clas = el.get_attribute("class")
+            # if clas == "carousel__slide is-selected":
+            #     break
+        if offset == -1:
+            for _ in range(0, MAX_STEP2):
+                scroll(driver, -STEP)
+                time.sleep(TIME_SLEEP2)
+        elif offset == 1:
+            for _ in range(0, MAX_STEP2):
+                scroll(driver, STEP)
+                time.sleep(TIME_SLEEP2)
+
     mouse_move_to_element(action, driver, mouse, el)
     action.move_to_element(el)
-    time.sleep(time_mls_06_1)
-    action.move_to_element(el).click().perform()
+    time.sleep(time_mls_05)
+    action.click().perform()
+    # action.move_to_element(el).click().perform()
     # mouse_click(action)
+    # except Exception:
+    #     pass
+    # finally:
 
 
 # def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
