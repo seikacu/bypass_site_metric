@@ -5,7 +5,6 @@ import traceback
 import numpy as np
 import scipy.interpolate as si
 
-# from numpy.random import choice
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains, Keys
@@ -16,14 +15,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
 from check_visible import is_visible
-# from move_mouse import mouse_click
 from move_mouse import mouse_move_to_element
 from scrolling_ import scroll
 from utils import get_location_characteristics
 from utils import get_window_characteristics
-# from utils import mouse as my_mouse
-
-# get_scroll_height,
 
 import secure
 
@@ -85,7 +80,7 @@ def scroll_move_click_pc_2(action: ActionChains, driver: webdriver.Chrome, el: W
         STEP = random.randint(10, MAX_STEP)
         elem_top_bound, elem_lower_bound = get_location_characteristics(el)
         win_upper_bound, win_lower_bound = get_window_characteristics(driver)
-        while elem_lower_bound - 250 < win_upper_bound:
+        while elem_lower_bound - 300 < win_upper_bound:
             elem_top_bound, elem_lower_bound = get_location_characteristics(el)
             win_upper_bound, win_lower_bound = get_window_characteristics(
                 driver)
@@ -201,8 +196,9 @@ def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
         nav = driver.find_element(
             By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
+        random.shuffle(lis)
         li = random.choice(lis)
-        # li = lis[4]
+        # li = lis[2]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li
@@ -224,6 +220,7 @@ def select_by_ref_mob(driver: webdriver.Chrome) -> WebElement:
         nav = driver.find_element(
             By.XPATH, "//nav[contains(@class, 'nav-mobile')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
+        random.shuffle(lis)
         li = random.choice(lis)
         # li = lis[0]
     except NoSuchElementException:
@@ -310,6 +307,7 @@ def rand_tap_but_more(action: ActionBuilder, but_more: WebElement, driver: webdr
 
 def change_developer(action: ActionChains, driver: webdriver.Chrome):
     table = driver.find_elements(By.TAG_NAME, 'tr')
+    random.shuffle(table)
     developer = random.choice(table)
     href = developer.find_element(By.TAG_NAME, 'a')
     move_touch(action, href)
@@ -452,6 +450,7 @@ func_main = [
     get_hrefs_zhk
 ]
 
+random.shuffle(func_main)
 random_func_main = random.choice(func_main)
 
 

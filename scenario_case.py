@@ -19,7 +19,6 @@ from selenium.webdriver.common.by import By
 
 import secure
 
-# from utils import get_window_characteristics
 from move_mouse import mouse_move_to_element
 from move_mouse import mouse_click
 # from move_mouse import random_movements
@@ -37,15 +36,10 @@ from navigation import get_pictures_progres
 from navigation import get_read_docs
 from navigation import get_slideshow_but
 from navigation import get_slideshow_close
-# from navigation import move
 from navigation import move_touch
-# from navigation import move_to_element
-# from navigation import move_mouse
 from navigation import rand_tap_but_more
 from navigation import random_func_main
-# from navigation import scroll_down_page
 from navigation import scroll_down_screen
-# from navigation import scroll_move_click_pc
 from navigation import scroll_move_click_pc_2
 from navigation import select_by_ref_mob
 from navigation import select_by_ref_pc
@@ -187,6 +181,7 @@ def start_selen(mode: str):
                     # scroll_move_click_pc(action, driver, li, mouse)
                     time.sleep(time_delay)
                     table = driver.find_elements(By.TAG_NAME, 'tr')
+                    random.shuffle(table)
                     developer = random.choice(table)
                     href = developer.find_element(By.TAG_NAME, 'a')
                     scroll_move_click_pc_2(action, driver, href, my_mouse)
@@ -335,6 +330,7 @@ def start_selen(mode: str):
 
 def scenario_all_buildings(action, driver, mouse):
     refs = random_func_main(driver)
+    random.shuffle(refs)
     link = str(random.choice(refs))
     href = link.split('/')[-1]
     main_el_select = href.split('-')[0]
@@ -362,7 +358,7 @@ def scenario_all_buildings(action, driver, mouse):
             el = get_read_docs(driver)
             mouse_move_to_element(action, driver, mouse, el)
             action.move_to_element(el)
-            time.sleep(0.5)
+            time.sleep(random.choice(mls))
             mouse_click(action)
             # scroll_move_click_pc_2(action, driver, el, mouse)
             time.sleep(time_delay)
@@ -408,6 +404,7 @@ def scenario_all_buildings(action, driver, mouse):
 
 
 def read_news_pc(action: ActionChains, driver, hrefs: list, mouse):
+    random.shuffle(hrefs)
     href = random.choice(hrefs)
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
@@ -420,6 +417,7 @@ def read_news_pc(action: ActionChains, driver, hrefs: list, mouse):
 
 
 def scenario_building(action: ActionChains, driver, hrefs: list, mouse):
+    random.shuffle(hrefs)
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
     print(f"href - {href}")
@@ -440,7 +438,7 @@ def scenario_building(action: ActionChains, driver, hrefs: list, mouse):
         el = get_read_docs(driver)
         mouse_move_to_element(action, driver, mouse, el)
         action.move_to_element(el)
-        time.sleep(0.5)
+        time.sleep(random.choice(mls))
         mouse_click(action)
         # scroll_move_click_pc_2(action, driver, el, mouse)
         time.sleep(time_delay)
@@ -481,6 +479,7 @@ def apartment_scene(action: ActionChains, driver, el, mouse):
 
 def scenario_all_buildings_mob(action: ActionBuilder, driver):
     refs = random_func_main(driver)
+    random.shuffle(refs)
     link = str(random.choice(refs))
     href = link.split('/')[-1]
     main_el_select = href.split('-')[0]
@@ -536,6 +535,7 @@ def scenario_all_buildings_mob(action: ActionBuilder, driver):
 
 
 def scenario_building_mob(action: ActionBuilder, driver, hrefs: list):
+    random.shuffle(hrefs)
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
@@ -589,6 +589,7 @@ def apartment_scene_mob(action: ActionBuilder, driver, el):
 
 
 def read_news_mob(action: ActionBuilder, driver, hrefs: list):
+    random.shuffle(hrefs)
     href = str(random.choice(hrefs))
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
