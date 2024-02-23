@@ -11,7 +11,7 @@ from selenium.common.exceptions import NoSuchDriverException
 from selenium.common.exceptions import UnknownMethodException
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ActionChains
-# from selenium.webdriver import Keys
+from selenium.webdriver import Keys
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
@@ -40,7 +40,8 @@ from navigation import move_touch
 from navigation import rand_tap_but_more
 from navigation import random_func_main
 from navigation import scroll_down_screen
-from navigation import scroll_move_click_pc_2
+from navigation import scroll_move_click_pc
+# from navigation import scroll_move_click_pc_2
 from navigation import select_by_ref_mob
 from navigation import select_by_ref_pc
 from navigation import touch
@@ -101,9 +102,6 @@ def start_selen(mode: str):
             print("mode - PC")
             secure.log.write_log('mode', 'PC')
             action = ActionChains(driver)
-            # my_mouse.x = 0
-            # my_mouse.y = 0
-            # mouse = Mouse()
             # Вероятность выбора равна 90%
             if random.random() < 0.9:
                 li = select_by_ref_pc(driver)
@@ -113,12 +111,21 @@ def start_selen(mode: str):
                     print("sub mode - Все новостройки")
                     secure.log.write_log('sub mode', 'Все новостройки')
                     # random_movements(driver, my_mouse)
-                    scroll_move_click_pc_2(action, driver, li, my_mouse)
+                    # scroll_move_click_pc_2(action, driver, li, my_mouse)
+                    scroll_move_click_pc(action, driver, li, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, li)
+                    action.move_to_element(li)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     scenario_all_buildings(action, driver, my_mouse)
                 elif hrer_name == 'Скидки и Акции':
                     print("sub mode - Скидки и Акции")
                     secure.log.write_log('sub mode', 'Скидки и Акции')
-                    scroll_move_click_pc_2(action, driver, li, my_mouse)
+                    scroll_move_click_pc(action, driver, li, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, li)
+                    action.move_to_element(li)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     time.sleep(time_delay)
                     # scroll_down_page(driver)
                     # height_end_page = driver.execute_script(
@@ -141,7 +148,11 @@ def start_selen(mode: str):
                 elif hrer_name == 'Новости':
                     print("sub mode - Новости")
                     secure.log.write_log('sub mode', 'Новости')
-                    scroll_move_click_pc_2(action, driver, li, my_mouse)
+                    scroll_move_click_pc(action, driver, li, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, li)
+                    action.move_to_element(li)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     # scroll_move_click_pc(action, driver, li, mouse)
                     time.sleep(time_delay)
                     but_more = get_but_more(driver)
@@ -149,9 +160,15 @@ def start_selen(mode: str):
                     for i in range(0, scrols):
                         if but_more is None:
                             break
-                        scroll_move_click_pc_2(
+                        # scroll_move_click_pc_2(
+                        #     action, driver, but_more, my_mouse)
+                        scroll_move_click_pc(
                             action, driver, but_more, my_mouse)
-                        # scroll_move_click_pc(action, driver, but_more, mouse)
+                        mouse_move_to_element(
+                            action, driver, my_mouse, but_more)
+                        action.move_to_element(but_more)
+                        time.sleep(random.uniform(0.1, 0.5))
+                        action.click().perform()
                         but_more = get_but_more(driver)
                         time.sleep(time_delay)
                         i += 1
@@ -161,11 +178,19 @@ def start_selen(mode: str):
                 elif hrer_name == 'Рейтинги':
                     print("sub mode - Рейтинги")
                     secure.log.write_log('sub mode', 'Рейтинги')
-                    scroll_move_click_pc_2(action, driver, li, my_mouse)
+                    scroll_move_click_pc(action, driver, li, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, li)
+                    action.move_to_element(li)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     # scroll_move_click_pc(action, driver, li, mouse)
                     time.sleep(time_delay)
                     top = get_min_max_top(driver)
-                    scroll_move_click_pc_2(action, driver, top, my_mouse)
+                    scroll_move_click_pc(action, driver, top, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, top)
+                    action.move_to_element(top)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     # win_upper_bound, _ = get_window_characteristics(driver)
                     # mouse_move_to_element(driver, top, mouse, win_upper_bound)
                     # move_to_element(driver, top)
@@ -177,14 +202,22 @@ def start_selen(mode: str):
                 elif hrer_name == 'Застройщики':
                     print("sub mode - Застройщики")
                     secure.log.write_log('sub mode', 'Застройщики')
-                    scroll_move_click_pc_2(action, driver, li, my_mouse)
+                    scroll_move_click_pc(action, driver, li, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, li)
+                    action.move_to_element(li)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     # scroll_move_click_pc(action, driver, li, mouse)
                     time.sleep(time_delay)
                     table = driver.find_elements(By.TAG_NAME, 'tr')
                     random.shuffle(table)
                     developer = random.choice(table)
                     href = developer.find_element(By.TAG_NAME, 'a')
-                    scroll_move_click_pc_2(action, driver, href, my_mouse)
+                    scroll_move_click_pc(action, driver, href, my_mouse)
+                    mouse_move_to_element(action, driver, my_mouse, href)
+                    action.move_to_element(href)
+                    time.sleep(random.uniform(0.1, 0.5))
+                    action.click().perform()
                     # scroll_move_click_pc(action, driver, href, mouse)
                     time.sleep(time_delay)
                     hrefs = get_cads_links(driver)
@@ -337,11 +370,19 @@ def scenario_all_buildings(action, driver, mouse):
     but_main_el_select = get_but_main_el_select(driver, main_el_select)
     # random_movements(driver, mouse)
     time.sleep(time_delay)
-    scroll_move_click_pc_2(action, driver, but_main_el_select, mouse)
+    scroll_move_click_pc(action, driver, but_main_el_select, mouse)
+    mouse_move_to_element(action, driver, mouse, but_main_el_select)
+    action.move_to_element(but_main_el_select)
+    time.sleep(random.uniform(0.1, 0.5))
+    action.click().perform()
     main_element = get_element_by_href(driver, href)
     # random_movements(driver, mouse)
     time.sleep(time_delay)
-    scroll_move_click_pc_2(action, driver, main_element, mouse)
+    scroll_move_click_pc(action, driver, main_element, mouse)
+    mouse_move_to_element(action, driver, mouse, main_element)
+    action.move_to_element(main_element)
+    time.sleep(random.uniform(0.1, 0.5))
+    action.click().perform()
     # random_movements(driver, mouse)
     time.sleep(time_delay)
     if main_el_select == 'zhk':
@@ -393,7 +434,11 @@ def scenario_all_buildings(action, driver, mouse):
             for i in range(0, scrols):
                 if but_more is None:
                     break
-                scroll_move_click_pc_2(action, driver, but_more, mouse)
+                scroll_move_click_pc(action, driver, but_more, mouse)
+                mouse_move_to_element(action, driver, mouse, but_more)
+                action.move_to_element(but_more)
+                time.sleep(random.uniform(0.1, 0.5))
+                action.click().perform()
                 # random_movements(driver, mouse)
                 time.sleep(time_delay)
                 but_more = get_but_more(driver)
@@ -408,7 +453,11 @@ def read_news_pc(action: ActionChains, driver, hrefs: list, mouse):
     href = random.choice(hrefs)
     href = href.split('/')[-1]
     el = get_element_by_href(driver, href)
-    scroll_move_click_pc_2(action, driver, el, mouse)
+    scroll_move_click_pc(action, driver, el, mouse)
+    mouse_move_to_element(action, driver, mouse, el)
+    action.move_to_element(el)
+    time.sleep(random.uniform(0.1, 0.5))
+    action.click().perform()
     # scroll_move_click_pc(action, driver, el, mouse)
     time.sleep(time_delay)
     height_end_page = driver.execute_script(
@@ -422,7 +471,11 @@ def scenario_building(action: ActionChains, driver, hrefs: list, mouse):
     href = href.split('/')[-1]
     print(f"href - {href}")
     el = get_element_by_href(driver, href)
-    scroll_move_click_pc_2(action, driver, el, mouse)
+    scroll_move_click_pc(action, driver, el, mouse)
+    mouse_move_to_element(action, driver, mouse, el)
+    action.move_to_element(el)
+    time.sleep(random.uniform(0.1, 0.5))
+    action.click().perform()
     # random_movements(driver, mouse)
     time.sleep(time_delay)
     pictures = get_pictures(driver)
@@ -449,17 +502,29 @@ def scenario_building(action: ActionChains, driver, hrefs: list, mouse):
 
 
 def apartment_scene(action: ActionChains, driver, el, mouse):
-    scroll_move_click_pc_2(action, driver, el, mouse)
+    scroll_move_click_pc(action, driver, el, mouse)
+    mouse_move_to_element(action, driver, mouse, el)
+    action.move_to_element(el)
+    time.sleep(random.uniform(0.1, 0.5))
+    action.click().perform()
     # random_movements(driver, mouse)
     time.sleep(time_delay)
     # action.send_keys(Keys.SPACE).perform()
     slide_show = get_slideshow_but(driver)
-    scroll_move_click_pc_2(action, driver, slide_show, mouse)
+    scroll_move_click_pc(action, driver, slide_show, mouse)
+    mouse_move_to_element(action, driver, mouse, slide_show)
+    action.move_to_element(slide_show)
+    time.sleep(random.uniform(0.1, 0.5))
+    action.click().perform()
     count_img = get_count_img(driver)
     time.sleep(count_img*time_see_pict)
-    # action.send_keys(Keys.ESCAPE).perform()
-    slideshow_close = get_slideshow_close(driver)
-    scroll_move_click_pc_2(action, driver, slideshow_close, mouse)
+    action.send_keys(Keys.ESCAPE).perform()
+    # slideshow_close = get_slideshow_close(driver)
+    # scroll_move_click_pc(action, driver, slideshow_close, mouse)
+    # mouse_move_to_element(action, driver, mouse, slideshow_close)
+    # action.move_to_element(slideshow_close)
+    # time.sleep(random.uniform(0.1, 0.5))
+    # action.click().perform()
     # random_movements(driver, mouse)
     time.sleep(time_delay)
 

@@ -22,7 +22,7 @@ from utils import get_window_characteristics
 
 import secure
 
-TIME_SLEEP = 0
+TIME_SLEEP = 0.05
 MAX_STEP = 20
 MAX_STEP2 = random.randint(30, 35)
 
@@ -123,15 +123,38 @@ def scroll_move_click_pc_2(action: ActionChains, driver: webdriver.Chrome, el: W
                 scroll(driver, STEP)
                 time.sleep(TIME_SLEEP2)
 
-    mouse_move_to_element(action, driver, mouse, el)
-    action.move_to_element(el)
-    time.sleep(time_mls_05)
-    action.click().perform()
     # action.move_to_element(el).click().perform()
     # mouse_click(action)
     # except Exception:
     #     pass
     # finally:
+
+
+def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
+    STEP = random.randint(10, MAX_STEP)
+    offset = int(driver.get_window_size()['height'])
+    page_y_offset = driver.execute_script('return window.pageYOffset;')
+    offset += page_y_offset
+    delta_y = int(el.rect['y'])
+    el_height = int(el.rect['height'])
+    if delta_y < page_y_offset:
+        while delta_y - 200 < page_y_offset:
+            scroll(driver, -STEP)
+            time.sleep(TIME_SLEEP)
+            page_y_offset -= STEP
+    else:
+        print(f"el_height - {el_height}")
+        while offset < delta_y + 400:
+            scroll(driver, STEP)
+            time.sleep(TIME_SLEEP)
+            offset += STEP
+    # time.sleep(random.choice(mls_01_1))
+    # mouse_move_to_element(action, driver, mouse, el)
+    # time.sleep(time_mls_05)
+    # ActionChains(driver).move_to_element(el).click().perform()
+    # action.move_to_element(el)
+    # time.sleep(time_mls_05)
+    # ActionChains(driver).click().perform()
 
 
 # def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
@@ -224,7 +247,7 @@ def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
         lis = nav.find_elements(By.TAG_NAME, 'li')
         random.shuffle(lis)
         li = random.choice(lis)
-        # li = lis[2]
+        # li = lis[0]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li

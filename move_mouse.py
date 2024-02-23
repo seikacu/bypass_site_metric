@@ -1,5 +1,6 @@
-# import time
+import time
 from random import randint
+# from random import uniform
 
 import random
 from math import sqrt
@@ -50,7 +51,7 @@ def mouse_move(driver, x, y):
 def mouse_move_to_element(action: ActionChains, driver, mouse, elem):
     # Размеры кнопки
     x_bias, y_bias = get_location(elem)
-    if x_bias == -1 and y_bias == -1:
+    if x_bias == -1.0 and y_bias == -1.0:
         print('x_bias == -1 and y_bias == -1')
         return False
     # max_x, max_y = driver.execute_script(
@@ -71,20 +72,20 @@ def mouse_move_to_element(action: ActionChains, driver, mouse, elem):
         print(f"x_step - {x_step}; y_step - {y_step}")
         for _ in range(num_of_steps):
             # print(f'x: {mouse.x}, y: {mouse.y}')
-            action.move_by_offset(x_step, y_step).perform()
+            ActionChains(driver).move_by_offset(x_step, y_step).perform()
             mouse.x += x_step
             mouse.y += y_step
-    action.move_to_element_with_offset(elem, x_bias, y_bias).perform()
+    ActionChains(driver).move_to_element_with_offset(
+        elem, x_bias, y_bias).perform()
     # action.move_to_element(elem).perform()
     # time.sleep(0.5)  # import time
-    # action.click().perform()
     mouse.x += x_bias
     mouse.y += y_bias
     # action.move_by_offset(int(mouse.x), int(mouse.y)).perform()
     return True
 
 
-def random_movements(driver, mouse):
+def random_movements(uniform, driver, mouse):
     while True:
         width = driver.execute_script(
             'return document.documentElement.clientWidth')
