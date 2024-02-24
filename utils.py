@@ -12,7 +12,7 @@ class Mouse():
 # mouse = Mouse()
 
 
-def convert_csv_to_json():
+def convert_csv_to_json() -> None:
     with open('geo.csv', encoding="utf-8") as f:
         reader = csv.DictReader(f)
         rows = list(reader)

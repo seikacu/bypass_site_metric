@@ -22,7 +22,7 @@ def get_path_webdriver() -> str:
         raise Exception("Unsupported platform!")
 
 
-def set_driver_options(options):
+def set_driver_options(options) -> None:
     options.binary_location = "/usr/bin/chromium"
     # options.binary_location = "/usr/bin/chromium-browser"
     options.add_argument('--headless=new')
@@ -37,7 +37,7 @@ def set_driver_options(options):
     options.add_argument('--disable-blink-features=AutomationControlled')
 
 
-def get_selenium_driver(use_proxy, mode):
+def get_selenium_driver(use_proxy, mode) -> webdriver:
     options = webdriver.ChromeOptions()
     set_driver_options(options)
 
@@ -129,7 +129,7 @@ def get_coordinates(location):
     return location.latitude, location.longitude
 
 
-def set_proxy(options):
+def set_proxy(options) -> None:
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     options.add_experimental_option('excludeSwitches', ['enable-automation'])
     options.add_experimental_option('useAutomationExtension', False)
@@ -174,7 +174,7 @@ def set_proxy(options):
 # options.add_extension(plugin_file)
 
 
-def change_proxy():
+def change_proxy() -> None:
     if secure.PROXY_ID < secure.num_proxs - 1:
         secure.PROXY_ID += 1
     else:

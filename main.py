@@ -14,7 +14,6 @@ mode = [
 ]
 
 time_delay = random.randrange(10, 60)
-# time_delay = random.randrange(1, 5)
 
 
 def main():
@@ -22,7 +21,8 @@ def main():
     secure.log.create_log()
     while True:
         time_start = datetime.datetime.now()
-        start_selen(random.choice(mode))
+        mode_set = random.choice(mode)
+        start_selen(mode_set)
         # t.start()
         # start_selen('mobile')
         # start_selen('PC')
@@ -31,7 +31,7 @@ def main():
         tsecs = time_diff.total_seconds()
         print(f'[INFO] Script worked in mode for {tsecs} seconds.')
         secure.log.write_log(
-            '[INFO]', f'Script worked in mode {mode} for {tsecs} seconds.')
+            '[INFO]', f'Script worked in mode {mode_set} for {tsecs} seconds.')
         time.sleep(time_delay)
     # print('END')
 

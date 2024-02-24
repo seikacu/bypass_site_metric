@@ -14,7 +14,7 @@ def scroll(driver, x):
     return driver.execute_script('return window.pageYOffset')
 
 
-def scroll_to_the_end(driver):
+def scroll_to_the_end(driver) -> None:
     last_height = driver.execute_script(
         "return document.documentElement.scrollHeight")
     while True:
