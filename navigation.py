@@ -284,6 +284,14 @@ def get_but_find(driver: webdriver.Chrome) -> WebElement:
 
 # Кнопка "Найти еще" / "Показать еще"
 def get_but_more(driver: webdriver.Chrome) -> WebElement:
+    """_summary_
+
+    Args:
+        driver (webdriver.Chrome): _description_
+
+    Returns:
+        WebElement: _description_
+    """
     el = None
     try:
         el = driver.find_element(By.XPATH, "//button[@id='loadmore']")
@@ -344,7 +352,7 @@ def change_developer(driver: WebDriver) -> None:
     move_touch(driver, href)
 
 
-def get_pictures(driver: webdriver.Chrome) -> WebElement:
+def get_pictures(driver: WebDriver) -> WebElement:
     el = None
     try:
         try:
