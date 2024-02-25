@@ -62,7 +62,7 @@ def mouse_move_to_element(driver: WebDriver, el: WebElement, mouse) -> bool:
             mouse.x, mouse.y, x_location, y_location, num_of_steps)
         # print(f"x_step - {x_step}; y_step - {y_step}")
         for _ in range(num_of_steps):
-            print(f'x: {mouse.x}, y: {mouse.y}')
+            # print(f'x: {mouse.x}, y: {mouse.y}')
             ActionChainsChild(driver).move_by_offset(x_step, y_step).perform()
             mouse.x += x_step
             mouse.y += y_step
@@ -95,7 +95,3 @@ def random_movements(driver, mouse) -> None:
                 print(f'random_movements - x: {mouse.x}, y: {mouse.y}')
                 mouse_move(driver, move_x, move_y)
         break
-
-
-def mouse_click(action):
-    action.click().perform()

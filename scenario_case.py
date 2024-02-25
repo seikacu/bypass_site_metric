@@ -37,7 +37,6 @@ from navigation import (
     get_slideshow_but,
     get_slideshow_close,
     move_touch,
-    rand_tap_but_more,
     random_func_main,
     scroll_down_screen,
     scroll_page,
@@ -303,13 +302,13 @@ def scenario_pc_building(driver: WebDriver, hrefs: list, mouse) -> None:
     scenario_pc_apartment(driver, pictures, mouse)
     progres = get_pictures_progres(driver)
     if progres:
+        scroll_page(driver, progres)
         scenario_pc_apartment(driver, progres, mouse)
     else:
         read_docs(driver, mouse)
 
 
 def scenario_pc_apartment(driver: WebDriver, el: WebElement, mouse) -> None:
-    scroll_page(driver, el)
     mouse_move_to_element(driver, el, mouse)
     click_by_move(driver, el)
     # random_movements(driver, mouse)
@@ -317,32 +316,15 @@ def scenario_pc_apartment(driver: WebDriver, el: WebElement, mouse) -> None:
     count_img = get_count_img(driver)
     # action.send_keys(Keys.SPACE).perform()
     slide_show = get_slideshow_but(driver)
-    scroll_page(driver, slide_show)
+    # slide_show_close = get_slideshow_close(driver)
+    # scroll_page(driver, slide_show)
     mouse_move_to_element(driver, slide_show, mouse)
     click_by_move(driver, slide_show)
     time.sleep(count_img*time_see_pict)
+    # mouse_move_to_element(driver, slide_show_close, mouse)
+    # click_by_move(driver, slide_show_close)
     ActionChains(driver).send_keys(Keys.ESCAPE).perform()
     time.sleep(time_delay)
-    # slideshow_close = get_slideshow_close(driver)
-    # scroll_move_click_pc(action, driver, slideshow_close, mouse)
-    # mouse_move_to_element(action, driver, mouse, slideshow_close)
-    # action.move_to_element(slideshow_close)
-    # time.sleep(random.uniform(0.1, 0.5))
-    # action.click().perform()
-    # random_movements(driver, mouse)
-
-    # label = driver.find_element(By.XPATH, "//label[contains(@class, 'filter-checkbox__label apart')]")
-    # scroll_move_click_pc(action, driver, label)
-    # section_house = driver.find_element(By.XPATH, "//section[contains(@class, 'section-house')]")
-    # elements = section_house.find_elements(By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
-    # el = random.choice(elements)
-    # scroll_move_click_pc(action, driver, el)
-    # # ПУСТОЕ ЗНАЧЕНИЕ - ПРОВЕРИТЬ!!!!
-    # plans = el.find_elements(By.XPATH, "//a[contains(@class, 'price-grid__plan')]")
-    # scroll_move_click_pc(action, driver, plan)
-    # but_close = driver.find_element(By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-    # scroll_move_click_pc(action, driver, but_close)
-    # time.sleep(time_delay)
 
 
 def scenario_pc_read_news(driver: WebDriver, hrefs: list, mouse) -> None:
@@ -401,16 +383,6 @@ def scenario_mob_all_new_buildings(driver: WebDriver, el: WebElement) -> None:
     touch(driver, el)
     time.sleep(time_delay)
     scenario_mob_all_buildings(driver)
-
-
-def read_docs_mob(driver):
-    el = get_read_docs(driver)
-    move_touch(driver, el)
-    time.sleep(time_delay)
-    height_end_page = driver.execute_script(
-        "return document.body.scrollHeight")
-    # Функция листать мобильный экран
-    time.sleep(time_delay)
 
 
 def scenario_mob_discount(driver: WebDriver, el: WebElement) -> None:
@@ -496,6 +468,16 @@ def pre_hrefs_building_mob(driver: WebDriver) -> None:
         # time.sleep(time_delay)
 
 
+def read_docs_mob(driver):
+    el = get_read_docs(driver)
+    move_touch(driver, el)
+    time.sleep(time_delay)
+    height_end_page = driver.execute_script(
+        "return document.body.scrollHeight")
+    # Функция листать мобильный экран
+    time.sleep(time_delay)
+
+
 def scenario_mob_all_buildings(driver) -> None:
     refs = random_func_main(driver)
     random.shuffle(refs)
@@ -523,14 +505,7 @@ def scenario_mob_all_buildings(driver) -> None:
         if but_more is None:
             pre_hrefs_building_mob(driver)
         else:
-            scrols = random.randrange(1, 10)
-            for i in range(0, scrols):
-                if but_more is None:
-                    break
-                move_touch(driver, but_more)
-                time.sleep(time_delay)
-                but_more = get_but_more(driver)
-                i += 1
+            rand_tap_but_more(driver, but_more)
             pre_hrefs_building_mob(driver)
 
 
@@ -547,13 +522,7 @@ def scenario_mob_buildings(driver: WebDriver, hrefs: list) -> None:
     if progres:
         scenario_mob_apartment(driver, progres)
     else:
-        el = get_read_docs(driver)
-        move_touch(driver, el)
-        time.sleep(time_delay)
-        # height_end_page = driver.execute_script(
-        #     "return document.body.scrollHeight")
-        # Функция листать мобильный экран
-        # time.sleep(time_delay)
+        read_docs_mob(driver)
 
 
 def scenario_mob_apartment(driver: WebDriver, el: WebElement) -> None:
@@ -583,24 +552,15 @@ def read_news_mob(driver: WebDriver, hrefs: list) -> None:
     time.sleep(time_delay)
 
 
-# def apartment_scenario_mob(action, driver):
-#     time.sleep(time_delay)
-#     section_house = driver.find_element(
-#         By.XPATH, "//section[contains(@class, 'section-house')]")
-#     time.sleep(time_delay)
-#     elements = section_house.find_elements(
-#         By.XPATH, "//div[contains(@class, 'accordion__item-heading')]")
-#     el = random.choice(elements)
-#     touch(action, el)
-#     plan = el.find_elements(
-#         By.XPATH, "//div[contains(@class, 'price-grid__plan')]")
-#     time.sleep(time_delay)
-#     move_touch(action, driver, plan)
-#     time.sleep(time_delay)
-#     but_close = driver.find_element(
-#         By.XPATH, "//button[contains(@class, 'fancybox__button--close')]")
-#     move_touch(action, driver, but_close)
-#     time.sleep(time_delay)
+def rand_tap_but_more(driver: WebDriver, but_more: WebElement) -> None:
+    scrols = random.randrange(1, 10)
+    for i in range(0, scrols):
+        if but_more is None:
+            break
+        move_touch(driver, but_more)
+        time.sleep(time_delay)
+        but_more = get_but_more(driver)
+        i += 1
 
 
 # url = 'https://www.novostroyki-spb.ru/'

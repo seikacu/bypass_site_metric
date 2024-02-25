@@ -7,7 +7,7 @@ import scipy.interpolate as si
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
-from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver import ActionChains
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
@@ -24,6 +24,9 @@ import secure
 TIME_SLEEP = 0.05
 MAX_STEP = 20
 MAX_STEP2 = 100
+
+STEP = random.randint(10, MAX_STEP)
+STEP2 = random.randint(50, MAX_STEP2)
 
 mls_01_1 = [
     0.1,
@@ -79,45 +82,7 @@ time_mls_05 = random.choice(mls_05)
 time_mls_06_1 = random.choice(mls_06_1)
 
 
-# def scroll_move_click_pc_2(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
-#     while not is_visible(driver, el):
-#         offset = 0
-#         STEP = random.randint(10, MAX_STEP)
-#         elem_top_bound, elem_lower_bound = get_location_characteristics(el)
-#         win_upper_bound, win_lower_bound = get_window_characteristics(
-#             driver)
-#         while elem_lower_bound < win_upper_bound:
-#             offset = -1
-#             elem_top_bound, elem_lower_bound = get_location_characteristics(el)
-#             win_upper_bound, win_lower_bound = get_window_characteristics(
-#                 driver)
-#             elem_top_bound, elem_lower_bound = get_location_characteristics(el)
-#             scroll(driver, -STEP)
-#             time.sleep(TIME_SLEEP)
-#             # else:
-#             #     scroll(driver, -STEP)
-#         while elem_top_bound > win_lower_bound:
-#             offset = 1
-#             elem_top_bound, elem_lower_bound = get_location_characteristics(
-#                 el)
-#             win_upper_bound, win_lower_bound = get_window_characteristics(
-#                 driver)
-#             scroll(driver, STEP)
-#             time.sleep(TIME_SLEEP)
-#             # else:
-#             #     scroll(driver, STEP)
-#         if offset == -1:
-#             for _ in range(0, MAX_STEP2):
-#                 scroll(driver, -STEP)
-#                 time.sleep(TIME_SLEEP2)
-#         elif offset == 1:
-#             for _ in range(0, MAX_STEP2):
-#                 scroll(driver, STEP)
-#                 time.sleep(TIME_SLEEP2)
-
-
 def scroll_page(driver: WebDriver, el: WebElement) -> None:
-    STEP = random.randint(10, MAX_STEP)
     offset = int(driver.get_window_size()['height'])
     page_y_offset = driver.execute_script('return window.pageYOffset;')
     offset += page_y_offset
@@ -136,60 +101,18 @@ def scroll_page(driver: WebDriver, el: WebElement) -> None:
             offset += STEP
 
 
-def click_by_move(driver: webdriver.Chrome, el: WebElement) -> None:
+def click_by_move(driver: WebDriver, el: WebElement) -> None:
     ActionChainsChild(driver).move_to_element(el).click().perform()
     # time.sleep(random.uniform(0.1, 0.5))
     # ActionChainsChild(driver).click().perform()
 
 
-# def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
-#     offset = int(driver.get_window_size()['height'])
-#     page_y_offset = driver.execute_script('return window.pageYOffset;')
-#     offset += page_y_offset
-#     delta_y = int(el.rect['y'])
-#     win_upper_bound, win_lower_bound = get_window_characteristics(driver)
-#     if delta_y < page_y_offset:
-#         while delta_y < page_y_offset:
-#             count = random.randrange(-100, 0)
-#             action.scroll_by_amount(0, count).perform()
-#             time.sleep(time_mls)
-#             page_y_offset += count
-#         time.sleep(time_delay)
-
-#         mouse_move_to_element(driver, mouse, el)
-#         # move_mouse(driver, el)
-#         # move_to_element(driver, el)
-#         time.sleep(time_mls)
-#         action.click(el).perform()
-#     else:
-#         while offset < delta_y + 200:
-#             count = 0
-#             if delta_y > 0 and delta_y >= 100:
-#                 count = random.randrange(0, 100)
-#             elif delta_y < 0 and delta_y <= -100:
-#                 count = random.randrange(-100, 0)
-#             elif 0 < delta_y < 100:
-#                 count = delta_y
-#             elif 0 > delta_y > -100:
-#                 count = delta_y
-#             action.scroll_by_amount(0, count).perform()
-#             time.sleep(time_mls)
-#             offset += count
-#         time.sleep(time_delay)
-#         mouse_move_to_element(driver, mouse, el)
-#         # move_mouse(action, el)
-#         # move_to_element(driver, el)
-#         time.sleep(time_mls)
-#         action.click(el).perform()
-
-
-def scroll_down_screen(driver: webdriver.Chrome, height_end_page: int) -> None:
-    STEP2 = random.randint(50, MAX_STEP2)
+def scroll_down_screen(driver: WebDriver, height_end_page: int) -> None:
     time.sleep(time_read_news)
     offset = int(driver.get_window_size()['height'])
     stop = random.randint(5, 10)
     start = 0
-    while offset <= height_end_page:
+    while offset <= height_end_page + 150:
         if start == stop:
             start = 0
             time.sleep(time_read_news)
@@ -222,21 +145,21 @@ def touch(driver: WebDriver, el: WebElement) -> None:
     action.perform()
 
 
-def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
+def select_by_ref_pc(driver: WebDriver) -> WebElement:
     li = None
     try:
         nav = driver.find_element(
             By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        # random.shuffle(lis)
-        # li = random.choice(lis)
-        li = lis[1]
+        random.shuffle(lis)
+        li = random.choice(lis)
+        # li = lis[4]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li
 
 
-def get_main_but_mob(driver: webdriver.Chrome) -> WebElement:
+def get_main_but_mob(driver: WebDriver) -> WebElement:
     nav_btn = None
     try:
         nav_btn = driver.find_element(
@@ -246,7 +169,7 @@ def get_main_but_mob(driver: webdriver.Chrome) -> WebElement:
     return nav_btn
 
 
-def select_by_ref_mob(driver: webdriver.Chrome) -> WebElement:
+def select_by_ref_mob(driver: WebDriver) -> WebElement:
     li = None
     try:
         nav = driver.find_element(
@@ -260,30 +183,8 @@ def select_by_ref_mob(driver: webdriver.Chrome) -> WebElement:
     return li
 
 
-# Строка поиска новостроек
-def get_find_box(driver: webdriver.Chrome) -> WebElement:
-    el = None
-    try:
-        el = driver.find_element(
-            By.XPATH, "//input[@placeholder='Поиск новостроек']")
-    except NoSuchElementException:
-        secure.log.write_log('traceback', traceback.format_exc())
-    return el
-
-
-# Кнопка найти новостройки
-def get_but_find(driver: webdriver.Chrome) -> WebElement:
-    el = None
-    try:
-        el = driver.find_element(
-            By.XPATH, "//button[contains(text(), 'Найти')]")
-    except NoSuchElementException:
-        secure.log.write_log('traceback', traceback.format_exc())
-    return el
-
-
 # Кнопка "Найти еще" / "Показать еще"
-def get_but_more(driver: webdriver.Chrome) -> WebElement:
+def get_but_more(driver: WebDriver) -> WebElement:
     """_summary_
 
     Args:
@@ -301,7 +202,7 @@ def get_but_more(driver: webdriver.Chrome) -> WebElement:
 
 
 # Кнопка закрыть всплывающее окно
-def get_x_but(driver: webdriver.Chrome) -> WebElement:
+def get_x_but(driver: WebDriver) -> WebElement:
     el = None
     try:
         el = driver.find_element(
@@ -311,37 +212,11 @@ def get_x_but(driver: webdriver.Chrome) -> WebElement:
     return el
 
 
-# Кнопка позвонить
-def get_call_but(driver: webdriver.Chrome) -> WebElement:
-    el = None
-    try:
-        el = driver.find_element(
-            By.XPATH, "//div[@id='everystraus_callback_phone']")
-    except NoSuchElementException:
-        secure.log.write_log('traceback', traceback.format_exc())
-    return el
-
-
-def scroll_down_yoffset(driver: webdriver.Chrome, element: WebElement, y: int) -> None:
-    ActionChains(driver).move_to_element_with_offset(element, 0, y).perform()
-
-
 def get_min_max_top(driver: webdriver.Chrome) -> WebElement:
     punkts = driver.find_elements(By.XPATH, "//div[contains(@class, 'punkt')]")
     punkt = random.choice(punkts)
     parent = punkt.find_element(By.XPATH, "..")
     return parent
-
-
-def rand_tap_but_more(driver: webdriver.Chrome, but_more: WebElement) -> None:
-    scrols = random.randrange(1, 10)
-    for i in range(0, scrols):
-        if but_more is None:
-            break
-        move_touch(driver, but_more)
-        time.sleep(time_delay)
-        but_more = get_but_more(driver)
-        i += 1
 
 
 def change_developer(driver: WebDriver) -> None:
@@ -368,7 +243,7 @@ def get_pictures(driver: WebDriver) -> WebElement:
     return el
 
 
-def get_pictures_progres(driver: webdriver.Chrome):
+def get_pictures_progres(driver: WebDriver):
     el = None
     try:
         try:
@@ -388,7 +263,7 @@ def get_pictures_progres(driver: webdriver.Chrome):
 
 
 # Кнопка запустить слайдшоу
-def get_slideshow_but(driver: webdriver.Chrome) -> WebElement:
+def get_slideshow_but(driver: WebDriver) -> WebElement:
     el = None
     try:
         el = driver.find_element(
@@ -398,7 +273,7 @@ def get_slideshow_but(driver: webdriver.Chrome) -> WebElement:
     return el
 
 
-def get_slideshow_close(driver: webdriver.Chrome) -> WebElement:
+def get_slideshow_close(driver: WebDriver) -> WebElement:
     el = None
     try:
         el = driver.find_element(
@@ -409,7 +284,7 @@ def get_slideshow_close(driver: webdriver.Chrome) -> WebElement:
 
 
 # РАЗДЕЛ - Все новостройки СПб
-def get_hrefs_zhk(driver: webdriver.Chrome) -> list:
+def get_hrefs_zhk(driver: WebDriver) -> list:
     links = []
     hrefs = driver.find_elements(By.XPATH, "//a[contains(@href,'/zhk-')]")
     for href in hrefs:
@@ -418,7 +293,7 @@ def get_hrefs_zhk(driver: webdriver.Chrome) -> list:
 
 
 # РАЗДЕЛ - Новостройки по районам
-def get_hrefs_novostrojki(driver: webdriver.Chrome) -> list:
+def get_hrefs_novostrojki(driver: WebDriver) -> list:
     links = []
     hrefs = driver.find_elements(
         By.XPATH, "//a[contains(@href,'/novostrojki-')]")
@@ -428,7 +303,7 @@ def get_hrefs_novostrojki(driver: webdriver.Chrome) -> list:
 
 
 # РАЗДЕЛ - Новостройки у метро
-def get_hrefs_metro(driver: webdriver.Chrome) -> list:
+def get_hrefs_metro(driver: WebDriver) -> list:
     links = []
     hrefs = driver.find_elements(By.XPATH, "//a[contains(@href,'/metro-')]")
     for href in hrefs:
@@ -436,7 +311,7 @@ def get_hrefs_metro(driver: webdriver.Chrome) -> list:
     return links
 
 
-def get_cads_links(driver: webdriver.Chrome) -> list:
+def get_cads_links(driver: WebDriver) -> list:
     cards_links = driver.find_elements(
         By.XPATH, "//li[contains(@class,'card-list__item')]")
     hrefs = []
@@ -447,18 +322,12 @@ def get_cads_links(driver: webdriver.Chrome) -> list:
     return hrefs
 
 
-def get_click_but_more(action: ActionChains, driver: webdriver.Chrome) -> None:
-    but_more = get_but_more(driver)
-    if but_more is not None:
-        move_touch(action, but_more)
-
-
 # Получить элемент для перехода по ссылке
 def get_element_by_href(driver: WebDriver, href: str) -> WebElement:
     return driver.find_element(By.XPATH, f"//a[contains(@href,'{href}')]")
 
 
-def get_count_img(driver: webdriver.Chrome) -> int:
+def get_count_img(driver: WebDriver) -> int:
     img_count = driver.find_element(By.XPATH, "//span[@data-fancybox-count]")
     return int(img_count.text)
 
@@ -496,7 +365,7 @@ news_mode = [
 ]
 
 
-def get_read_docs(driver: webdriver.Chrome) -> WebElement:
+def get_read_docs(driver: WebDriver) -> WebElement:
     el = None
     hrefs = ["/agreement", "/privacy-policy"]
     href = random.choice(hrefs)
@@ -507,80 +376,23 @@ def get_read_docs(driver: webdriver.Chrome) -> WebElement:
     return el
 
 
-# Прокрутить колесо мыши до элемента
-def move_to_element(driver: webdriver, el: WebElement) -> None:
-    ActionChains(driver).move_to_element(el).pause(time_mls).perform()
-
-
-# Получить координаты элемента
-def get_el_location(el: WebElement) -> dict:
-    return el.location
-
-
-def scroll_down_page(driver: webdriver.Chrome, speed=25) -> None:
-    current_scroll_position, new_height = 0, 1
-    while current_scroll_position <= new_height:
-        # time.sleep(random.choice(mls))
-        current_scroll_position += speed
-        driver.execute_script(
-            "window.scrollTo(0, {});".format(current_scroll_position))
-        new_height = driver.execute_script("return document.body.scrollHeight")
-
-
-def scroll_down_to_element(driver: webdriver.Chrome, y: int, speed=100) -> None:
-    current_scroll_position, new_height = 0, 1
-    while current_scroll_position <= new_height:
-        time.sleep(random.choice(mls))
-        current_scroll_position += speed
-        driver.execute_script(
-            "window.scrollTo(0, {});".format(current_scroll_position))
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height >= y:
-            break
-
-
-def scrooll_down(actions) -> None:
-    for _ in range(5):
-        actions.send_keys(Keys.ARROW_DOWN)
-        actions.perform()
-        time.sleep(random.choice(mls_05))
-
-
-def smoth_scrool(driver: webdriver.Chrome, el: WebElement) -> None:
-    driver.execute_script(
-        "arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", el)
-
-
-def _in_viewport(driver: webdriver.Chrome, el: WebElement):
-    script = (
-        "for(var e=arguments[0],f=e.offsetTop,t=e.offsetLeft,o=e.offsetWidth,n=e.offsetHeight;\n"
-        "e.offsetParent;)f+=(e=e.offsetParent).offsetTop,t+=e.offsetLeft;\n"
-        "return f<window.pageYOffset+window.innerHeight&&t<window.pageXOffset+window.innerWidth&&f+n>\n"
-        "window.pageYOffset&&t+o>window.pageXOffset"
-    )
-    return driver.execute_script(script, el)
-
-
-def check_dialog_class(driver: webdriver.Chrome, mode: str, mouse) -> None:
+def check_dialog_class(driver: WebDriver, mode: str, mouse) -> None:
     try:
         iframe = driver.find_element(
             By.XPATH, "//div[@id='everystraus_add_blur']")
         if iframe.get_attribute("style") == "display: block;":
             but_x = get_x_but(driver)
             if mode == 'PC':
-                action = ActionChains(driver)
-                mouse_move_to_element(action, driver, mouse, but_x)
-                action.click(but_x).perform()
+                mouse_move_to_element(driver, but_x, mouse)
+                click_by_move(driver, but_x)
+                # ActionChains(driver).click(but_x).perform()
             elif mode == 'mobile':
-                touch_input = PointerInput(POINTER_TOUCH, "touch")
-                action = ActionBuilder(driver, mouse=touch_input)
-                action.pointer_action.move_to(
-                    but_x).pointer_down().move_by(2, 2)
-                action.perform()
-                time.sleep(time_mls)
-                action.pointer_action.move_to(
-                    but_x).pointer_down().pointer_up()
-                action.perform()
+                touch(driver, but_x)
+                # touch_input = PointerInput(POINTER_TOUCH, "touch")
+                # action = ActionBuilder(driver, mouse=touch_input)
+                # action.pointer_action.move_to(
+                # but_x).pointer_down().move_by(2, 2).pointer_up(0)
+                # action.perform()
     except:
         pass
 
@@ -637,14 +449,76 @@ def check_dialog_thread(stop: bool, driver: webdriver.Chrome, mode: str, mouse) 
             break
 
 
-# class ActionChainsChild(ActionChains):
-#     def move_by_offset(self, xoffset, yoffset):
-#         if self._driver.w3c:
-#             self.w3c_actions.pointer_action.move_by(xoffset, yoffset)
-#             # self.w3c_actions.key_action.pause()
-#         else:
-#             self._actions.append(lambda: self._driver.execute(
-#                 Command.MOVE_TO, {
-#                     'xoffset': int(xoffset),
-#                     'yoffset': int(yoffset)}))
-#         return self
+# Строка поиска новостроек
+def get_find_box(driver: webdriver.Chrome) -> WebElement:
+    el = None
+    try:
+        el = driver.find_element(
+            By.XPATH, "//input[@placeholder='Поиск новостроек']")
+    except NoSuchElementException:
+        secure.log.write_log('traceback', traceback.format_exc())
+    return el
+
+
+# Кнопка найти новостройки
+def get_but_find(driver: webdriver.Chrome) -> WebElement:
+    el = None
+    try:
+        el = driver.find_element(
+            By.XPATH, "//button[contains(text(), 'Найти')]")
+    except NoSuchElementException:
+        secure.log.write_log('traceback', traceback.format_exc())
+    return el
+
+# Кнопка позвонить
+
+
+def get_call_but(driver: webdriver.Chrome) -> WebElement:
+    el = None
+    try:
+        el = driver.find_element(
+            By.XPATH, "//div[@id='everystraus_callback_phone']")
+    except NoSuchElementException:
+        secure.log.write_log('traceback', traceback.format_exc())
+    return el
+
+
+def scroll_down_yoffset(driver: webdriver.Chrome, element: WebElement, y: int) -> None:
+    ActionChains(driver).move_to_element_with_offset(element, 0, y).perform()
+
+
+def scroll_down_page(driver: webdriver.Chrome, speed=25) -> None:
+    current_scroll_position, new_height = 0, 1
+    while current_scroll_position <= new_height:
+        # time.sleep(random.choice(mls))
+        current_scroll_position += speed
+        driver.execute_script(
+            "window.scrollTo(0, {});".format(current_scroll_position))
+        new_height = driver.execute_script("return document.body.scrollHeight")
+
+
+def scroll_down_to_element(driver: webdriver.Chrome, y: int, speed=100) -> None:
+    current_scroll_position, new_height = 0, 1
+    while current_scroll_position <= new_height:
+        time.sleep(random.choice(mls))
+        current_scroll_position += speed
+        driver.execute_script(
+            "window.scrollTo(0, {});".format(current_scroll_position))
+        new_height = driver.execute_script("return document.body.scrollHeight")
+        if new_height >= y:
+            break
+
+
+def smoth_scrool(driver: webdriver.Chrome, el: WebElement) -> None:
+    driver.execute_script(
+        "arguments[0].scrollIntoView({block: 'center', behavior: 'smooth'});", el)
+
+
+def _in_viewport(driver: webdriver.Chrome, el: WebElement):
+    script = (
+        "for(var e=arguments[0],f=e.offsetTop,t=e.offsetLeft,o=e.offsetWidth,n=e.offsetHeight;\n"
+        "e.offsetParent;)f+=(e=e.offsetParent).offsetTop,t+=e.offsetLeft;\n"
+        "return f<window.pageYOffset+window.innerHeight&&t<window.pageXOffset+window.innerWidth&&f+n>\n"
+        "window.pageYOffset&&t+o>window.pageXOffset"
+    )
+    return driver.execute_script(script, el)
