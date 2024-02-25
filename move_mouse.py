@@ -4,22 +4,17 @@ import random
 from math import sqrt
 from numpy.random import choice
 from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 from utils import get_window_characteristics
 
 STEP = 25
 
 
-# class ActionChainsChild(ActionChains):
-#     def move_by_offset(self, xoffset, yoffset):
-#         if self._driver.w3c:
-#             self.w3c_actions.pointer_action.move_by(xoffset, yoffset)
-#             # self.w3c_actions.key_action.pause()
-#         else:
-#             self._actions.append(lambda: self._driver.execute(
-#                 Command.MOVE_TO, {
-#                     'xoffset': int(xoffset),
-#                     'yoffset': int(yoffset)}))
-#         return self
+class ActionChainsChild(ActionChains):
+    def move_by_offset(self, xoffset, yoffset):
+        self.w3c_actions.pointer_action.move_by(xoffset, yoffset)
+        return self
 
 
 def get_location(button):
@@ -46,18 +41,18 @@ def mouse_move(driver, x, y) -> None:
     ActionChains(driver).move_by_offset(x, y).perform()
 
 
-def mouse_move_to_element(action: ActionChains, driver, mouse, elem) -> None:
+def mouse_move_to_element(driver: WebDriver, el: WebElement, mouse) -> bool:
     # Размеры кнопки
-    x_bias, y_bias = get_location(elem)
+    x_bias, y_bias = get_location(el)
     if x_bias == -1.0 and y_bias == -1.0:
         print('x_bias == -1 and y_bias == -1')
         return False
     # Верхняя и нжняя шраница окна по оси Y
-    win_upper_bound, win_lower_bound = get_window_characteristics(driver)
+    win_upper_bound, _ = get_window_characteristics(driver)
     # print(
     # f"win_upper_bound - {win_upper_bound}; win_lower_bound - {win_lower_bound}")
-    x_location = elem.location['x']
-    y_location = elem.location['y'] - win_upper_bound
+    x_location = el.location['x']
+    y_location = el.location['y'] - win_upper_bound
     # print(f"x_location - {x_location}; y_location - {y_location}")
     num_of_steps = int(distance(mouse.x, mouse.y,
                                 x_location, y_location) / STEP)
@@ -67,18 +62,18 @@ def mouse_move_to_element(action: ActionChains, driver, mouse, elem) -> None:
             mouse.x, mouse.y, x_location, y_location, num_of_steps)
         # print(f"x_step - {x_step}; y_step - {y_step}")
         for _ in range(num_of_steps):
-            # print(f'x: {mouse.x}, y: {mouse.y}')
-            ActionChains(driver).move_by_offset(x_step, y_step).perform()
+            print(f'x: {mouse.x}, y: {mouse.y}')
+            ActionChainsChild(driver).move_by_offset(x_step, y_step).perform()
             mouse.x += x_step
             mouse.y += y_step
-    ActionChains(driver).move_to_element_with_offset(
-        elem, x_bias, y_bias).perform()
+    ActionChainsChild(driver).move_to_element_with_offset(
+        el, x_bias, y_bias).perform()
     mouse.x += x_bias
     mouse.y += y_bias
     return True
 
 
-def random_movements(uniform, driver, mouse) -> None:
+def random_movements(driver, mouse) -> None:
     while True:
         width = driver.execute_script(
             'return document.documentElement.clientWidth')

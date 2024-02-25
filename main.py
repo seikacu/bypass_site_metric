@@ -1,6 +1,5 @@
 import datetime
 import random
-# import threading
 import time
 
 import secure
@@ -22,10 +21,10 @@ def main():
     while True:
         time_start = datetime.datetime.now()
         mode_set = random.choice(mode)
-        start_selen(mode_set)
+        # start_selen(mode_set)
         # t.start()
         # start_selen('mobile')
-        # start_selen('PC')
+        start_selen('PC')
         time_end = datetime.datetime.now()
         time_diff = time_end - time_start
         tsecs = time_diff.total_seconds()
@@ -33,10 +32,7 @@ def main():
         secure.log.write_log(
             '[INFO]', f'Script worked in mode {mode_set} for {tsecs} seconds.')
         time.sleep(time_delay)
-    # print('END')
 
-
-# t = threading.Thread(target=start_selen(random.choice(mode)))
 
 if __name__ == '__main__':
     main()

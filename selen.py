@@ -7,6 +7,7 @@ from geopy.geocoders import Nominatim
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 import secure
 
@@ -23,10 +24,10 @@ def get_path_webdriver() -> str:
 
 
 def set_driver_options(options) -> None:
-    options.binary_location = "/usr/bin/chromium"
+    # options.binary_location = "/usr/bin/chromium"
     # options.binary_location = "/usr/bin/chromium-browser"
-    options.add_argument('--headless=new')
-    options.add_argument("--no-sandbox")
+    # options.add_argument('--headless=new')
+    # options.add_argument("--no-sandbox")
     options.add_experimental_option("prefs", {
         "profile.default_content_setting_values.notifications": 2,
     })
@@ -37,7 +38,7 @@ def set_driver_options(options) -> None:
     options.add_argument('--disable-blink-features=AutomationControlled')
 
 
-def get_selenium_driver(use_proxy, mode) -> webdriver:
+def get_selenium_driver(use_proxy, mode) -> WebDriver:
     options = webdriver.ChromeOptions()
     set_driver_options(options)
 

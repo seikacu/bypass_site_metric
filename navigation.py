@@ -8,12 +8,14 @@ import scipy.interpolate as si
 from selenium import webdriver
 from selenium.common import NoSuchElementException
 from selenium.webdriver import ActionChains, Keys
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
+from move_mouse import ActionChainsChild
 from move_mouse import mouse_move_to_element
 from scrolling_ import scroll
 
@@ -114,7 +116,7 @@ time_mls_06_1 = random.choice(mls_06_1)
 #                 time.sleep(TIME_SLEEP2)
 
 
-def scroll_page(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse) -> None:
+def scroll_page(driver: WebDriver, el: WebElement) -> None:
     STEP = random.randint(10, MAX_STEP)
     offset = int(driver.get_window_size()['height'])
     page_y_offset = driver.execute_script('return window.pageYOffset;')
@@ -122,22 +124,22 @@ def scroll_page(action: ActionChains, driver: webdriver.Chrome, el: WebElement, 
     delta_y = int(el.rect['y'])
     # el_height = int(el.rect['height'])
     if delta_y < page_y_offset:
-        while delta_y - 400 < page_y_offset:
+        while delta_y - 200 < page_y_offset:
             scroll(driver, -STEP)
             time.sleep(TIME_SLEEP)
             page_y_offset -= STEP
     else:
         # print(f"el_height - {el_height}")
-        while offset < delta_y + 400:
+        while offset < delta_y + 500:
             scroll(driver, STEP)
             time.sleep(TIME_SLEEP)
             offset += STEP
 
 
-def click_by_move(action: ActionChains, el: WebElement) -> None:
-    action.move_to_element(el)
-    time.sleep(random.uniform(0.1, 0.5))
-    action.click().perform()
+def click_by_move(driver: webdriver.Chrome, el: WebElement) -> None:
+    ActionChainsChild(driver).move_to_element(el).click().perform()
+    # time.sleep(random.uniform(0.1, 0.5))
+    # ActionChainsChild(driver).click().perform()
 
 
 # def scroll_move_click_pc(action: ActionChains, driver: webdriver.Chrome, el: WebElement, mouse):
@@ -181,7 +183,7 @@ def click_by_move(action: ActionChains, el: WebElement) -> None:
 #         action.click(el).perform()
 
 
-def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_end_page: int) -> None:
+def scroll_down_screen(driver: webdriver.Chrome, height_end_page: int) -> None:
     STEP2 = random.randint(50, MAX_STEP2)
     time.sleep(time_read_news)
     offset = int(driver.get_window_size()['height'])
@@ -193,16 +195,15 @@ def scroll_down_screen(action: ActionChains, driver: webdriver.Chrome, height_en
             time.sleep(time_read_news)
         scroll(driver, STEP2)
         time.sleep(TIME_SLEEP2)
-        # count = random.randrange(0, 100)
-        # action.scroll_by_amount(0, count).perform()
-        # time.sleep(time_mls)
         offset += STEP2
         start += 1
     if offset >= height_end_page:
         time.sleep(time_read_news)
 
 
-def move_touch(action: ActionChains, el: WebElement) -> None:
+def move_touch(driver: WebDriver, el: WebElement) -> None:
+    touch_input = PointerInput(POINTER_TOUCH, "touch")
+    action = ActionBuilder(driver, mouse=touch_input)
     action.pointer_action.move_to(el).pointer_down().move_by(2, 2)
     action.perform()
     time.sleep(time_mls)
@@ -210,18 +211,14 @@ def move_touch(action: ActionChains, el: WebElement) -> None:
     action.perform()
 
 
-def touch(action: ActionBuilder, el: WebElement) -> None:
+def touch(driver: WebDriver, el: WebElement) -> None:
+    touch_input = PointerInput(POINTER_TOUCH, "touch")
+    action = ActionBuilder(driver, mouse=touch_input)
     action.pointer_action\
         .move_to(el)\
         .pointer_down()\
         .move_by(2, 2)\
         .pointer_up()
-    action.perform()
-
-
-def move(action: ActionBuilder) -> None:
-    action.pointer_action.move_to_location(0, 800).pointer_down().move_by(
-        2, 2, tilt_x=-72, tilt_y=9, twist=86).pointer_up(1)
     action.perform()
 
 
@@ -231,9 +228,9 @@ def select_by_ref_pc(driver: webdriver.Chrome) -> WebElement:
         nav = driver.find_element(
             By.XPATH, "//nav[contains(@class, 'nav-desktop')]")
         lis = nav.find_elements(By.TAG_NAME, 'li')
-        random.shuffle(lis)
-        li = random.choice(lis)
-        # li = lis[0]
+        # random.shuffle(lis)
+        # li = random.choice(lis)
+        li = lis[1]
     except NoSuchElementException:
         secure.log.write_log('traceback', traceback.format_exc())
     return li
@@ -328,23 +325,23 @@ def get_min_max_top(driver: webdriver.Chrome) -> WebElement:
     return parent
 
 
-def rand_tap_but_more(action: ActionBuilder, but_more: WebElement, driver: webdriver.Chrome) -> None:
+def rand_tap_but_more(driver: webdriver.Chrome, but_more: WebElement) -> None:
     scrols = random.randrange(1, 10)
     for i in range(0, scrols):
         if but_more is None:
             break
-        move_touch(action, but_more)
+        move_touch(driver, but_more)
         time.sleep(time_delay)
         but_more = get_but_more(driver)
         i += 1
 
 
-def change_developer(action: ActionChains, driver: webdriver.Chrome) -> None:
+def change_developer(driver: WebDriver) -> None:
     table = driver.find_elements(By.TAG_NAME, 'tr')
     random.shuffle(table)
     developer = random.choice(table)
     href = developer.find_element(By.TAG_NAME, 'a')
-    move_touch(action, href)
+    move_touch(driver, href)
 
 
 def get_pictures(driver: webdriver.Chrome) -> WebElement:
@@ -449,7 +446,7 @@ def get_click_but_more(action: ActionChains, driver: webdriver.Chrome) -> None:
 
 
 # Получить элемент для перехода по ссылке
-def get_element_by_href(driver: webdriver, href: str) -> WebElement:
+def get_element_by_href(driver: WebDriver, href: str) -> WebElement:
     return driver.find_element(By.XPATH, f"//a[contains(@href,'{href}')]")
 
 
@@ -459,7 +456,7 @@ def get_count_img(driver: webdriver.Chrome) -> int:
 
 
 # Развернуть список главного элемента
-def get_but_main_el_select(driver: webdriver, el: str) -> WebElement:
+def get_but_main_el_select(driver: WebDriver, el: str) -> WebElement:
     links_btns = driver.find_elements(
         By.XPATH, "//span[contains(@class,'links__btn')]")
     if el == 'metro':
